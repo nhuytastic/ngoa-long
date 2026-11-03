@@ -588,7 +588,7 @@ with col4: birth_date = st.date_input("Ngày Sinh", value=date(1993, 1, 7), min_
 with col5: birth_hour = st.selectbox("Giờ Sinh", options=list(range(24)), index=8)
 with col6: birth_minute = st.selectbox("Phút Sinh", options=list(range(60)), index=15)
 with col7: selected_tz = st.selectbox("Múi Giờ", options=list(range(-12, 15)), index=19, format_func=lambda x: f"UTC{'+' if x>=0 else ''}{x}")
-with col8: loai_ban = st.selectbox("Loại Bàn", options=["日家", "时家"], index=0)
+with col8: loai_ban = st.selectbox("Loại Bàn", options=["日家", "时家"], index=1)
 with col9: huong_son = st.selectbox("Hướng - Sơn", options=["立向", "坐山"], index=0)
 
 # --- TÍNH TOÁN SAO BẢN MỆNH LINH HOẠT THEO LOẠI BÀN ---
@@ -775,8 +775,11 @@ thoi_cat_list = format_ui_list(list(THOI_CAT_DICT.keys()))
 
 with st.container():
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    _, c1, c2, c3, c4, c5, c6, _ = st.columns([0.5, 1, 1, 1, 1, 1, 1, 0.5])
+    _, c1, c_gio, c2, c3, c4, c5, c6, _ = st.columns([0.1, 1, 0.8, 1, 1, 1, 1, 1, 0.1])
+    
     loc_huong = c1.selectbox("方向 (Hướng)", options=list(huong_list.keys()))
+    loc_gio = c_gio.selectbox("时辰 (Giờ)", options=[""] + list(dia_chi), disabled=(loai_ban=="日家"))
+    
     loc_thien_can = c2.selectbox("天盤 (Thiên Bàn)", options=can_list)
     loc_dia_can = c3.selectbox("地盤 (Địa Bàn)", options=can_list)
     loc_mon = c4.selectbox("八门 (Bát Môn)", options=mon_list)
@@ -858,6 +861,11 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     # Lấy thông tin Lịch Giờ
                     chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
                     chi_gio_scan = dia_chi[chi_gio_idx]
+                    
+                    # LỌC GIỜ: Nếu có chọn Giờ cụ thể mà giờ đang quét không khớp -> Bỏ qua, quét tiếp
+                    if loc_gio and chi_gio_scan != loc_gio:
+                        continue
+                        
                     can_gio_scan = get_wushu_dun(can_ngay_scan, chi_gio_scan)
                     
                     # Cục số và Sao của Giờ (Áp dụng Tọa Sơn nếu có)
