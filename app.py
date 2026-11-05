@@ -63,6 +63,26 @@ HEX_NAME_DICT = {
     ("风","泽"): "Trung Phu", ("雷","山"): "Tiểu Quá", ("水","火"): "Ký Tế", ("火","水"): "Vị Tế"
 }
 
+# TỪ ĐIỂN TÊN QUẺ TIẾNG TRUNG & SỐ THỨ TỰ (1-64)
+HEX_CHINESE_DICT = {
+    ("天","天"): (1, "乾"), ("地","地"): (2, "坤"), ("水","雷"): (3, "屯"), ("山","水"): (4, "蒙"),
+    ("水","天"): (5, "需"), ("天","水"): (6, "訟"), ("地","水"): (7, "師"), ("水","地"): (8, "比"),
+    ("风","天"): (9, "小畜"), ("天","泽"): (10, "履"), ("地","天"): (11, "泰"), ("天","地"): (12, "否"),
+    ("天","火"): (13, "同人"), ("火","天"): (14, "大有"), ("地","山"): (15, "謙"), ("雷","地"): (16, "豫"),
+    ("泽","雷"): (17, "隨"), ("山","风"): (18, "蠱"), ("地","泽"): (19, "臨"), ("风","地"): (20, "觀"),
+    ("火","雷"): (21, "噬嗑"), ("山","火"): (22, "賁"), ("山","地"): (23, "剝"), ("地","雷"): (24, "復"),
+    ("天","雷"): (25, "無妄"), ("山","天"): (26, "大畜"), ("山","雷"): (27, "頤"), ("泽","风"): (28, "大過"),
+    ("水","水"): (29, "坎"), ("火","火"): (30, "離"), ("泽","山"): (31, "咸"), ("雷","风"): (32, "恆"),
+    ("天","山"): (33, "遯"), ("雷","天"): (34, "大壯"), ("火","地"): (35, "晉"), ("地","火"): (36, "明夷"),
+    ("风","火"): (37, "家人"), ("火","泽"): (38, "睽"), ("水","山"): (39, "蹇"), ("雷","水"): (40, "解"),
+    ("山","泽"): (41, "損"), ("风","雷"): (42, "益"), ("泽","天"): (43, "夬"), ("天","风"): (44, "姤"),
+    ("泽","地"): (45, "萃"), ("地","风"): (46, "升"), ("泽","水"): (47, "困"), ("水","风"): (48, "井"),
+    ("泽","火"): (49, "革"), ("火","风"): (50, "鼎"), ("雷","雷"): (51, "震"), ("山","山"): (52, "艮"),
+    ("风","山"): (53, "漸"), ("雷","泽"): (54, "歸妹"), ("雷","火"): (55, "豐"), ("火","山"): (56, "旅"),
+    ("风","风"): (57, "巽"), ("泽","泽"): (58, "兌"), ("风","水"): (59, "渙"), ("水","泽"): (60, "節"),
+    ("风","泽"): (61, "中孚"), ("雷","山"): (62, "小過"), ("水","火"): (63, "既濟"), ("火","水"): (64, "未濟")
+}
+
 KIGAKU_OPPOSITE = {1: 9, 2: 8, 3: 7, 4: 6, 6: 4, 7: 3, 8: 2, 9: 1, 5: 5}
 KIGAKU_HOME = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9}
 KIGAKU_COMPATIBILITY = {
@@ -562,8 +582,12 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
                     out_upper_tri = TIEN_THIEN_MAP[p]
                     out_eval = EVAL_DICT.get(out_upper_tri, {}).get(global_lower_tri, "△")
                     out_hex_color = "#CC0000" if out_eval == "〇" else "#B8860B" if out_eval == "△" else "#000000"
-                    out_hex_name = HEX_NAME_DICT.get((out_upper_tri, global_lower_tri), "Không rõ")
-                    outer_hex_html = f"<div class='bottom-left-hex' style='z-index: 1; color:{out_hex_color};'><div class='hex-img'><div>{TRIGRAM_UNICODE[out_upper_tri]}</div><div>{TRIGRAM_UNICODE[global_lower_tri]}</div></div><div class='hex-text'><div>{out_upper_tri}</div><div>{global_lower_tri}</div></div></div>"
+                    
+                    # Tra cứu Số thứ tự và Tên tiếng Trung
+                    hex_num, hex_name_cn = HEX_CHINESE_DICT.get((out_upper_tri, global_lower_tri), (0, ""))
+                    
+                    # Thay {out_upper_tri} thành {hex_num} và {global_lower_tri} thành {hex_name_cn}
+                    outer_hex_html = f"<div class='bottom-left-hex' style='z-index: 1; color:{out_hex_color};'><div class='hex-img'><div>{TRIGRAM_UNICODE[out_upper_tri]}</div><div>{TRIGRAM_UNICODE[global_lower_tri]}</div></div><div class='hex-text'><div>{hex_num}</div><div>{hex_name_cn}</div></div></div>"
 
                 form_html = "".join([f"<div class='formation-item' style='color:{f_color};'>{f_name}</div>" for f_name, f_color in cung_status[p]])
                 html += f'<td class="qmdj-td">{kigaku_html}<div class="top-right-panel">{form_html}</div>{outer_hex_html}<div class="bottom-right-group"><div class="stem-col"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div></div></td>'
@@ -982,9 +1006,11 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     if out_eval == "〇": out_hex_color = "#CC0000"
                     elif out_eval == "△": out_hex_color = "#B8860B"
                     else: out_hex_color = "#000000"
-                    out_hex_name = HEX_NAME_DICT.get((out_upper_tri, global_lower_tri_scan), "Không rõ")
+
+                    # Đồng bộ hiển thị Số thứ tự và Tên tiếng Trung
+                    hex_num, hex_name_cn = HEX_CHINESE_DICT.get((out_upper_tri, global_lower_tri_scan), (0, ""))
                     
-                    hex_html = f" | <span style='color:{out_hex_color}; font-weight:bold;'> {TRIGRAM_UNICODE[out_upper_tri]}/{TRIGRAM_UNICODE[global_lower_tri_scan]} {out_hex_name}</span>"
+                    hex_html = f" | <span style='color:{out_hex_color}; font-weight:bold;'> {TRIGRAM_UNICODE[out_upper_tri]}/{TRIGRAM_UNICODE[global_lower_tri_scan]} {hex_num}-{hex_name_cn}</span>"
                     
                     d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                     raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
