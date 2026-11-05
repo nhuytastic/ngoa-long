@@ -586,8 +586,9 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
                     # Tra cứu Số thứ tự và Tên tiếng Trung
                     hex_num, hex_name_cn = HEX_CHINESE_DICT.get((out_upper_tri, global_lower_tri), (0, ""))
                     
-                    # Thay {out_upper_tri} thành {hex_num} và {global_lower_tri} thành {hex_name_cn}
-                    outer_hex_html = f"<div class='bottom-left-hex' style='z-index: 1; color:{out_hex_color};'><div class='hex-img'><div>{TRIGRAM_UNICODE[out_upper_tri]}</div><div>{TRIGRAM_UNICODE[global_lower_tri]}</div></div><div class='hex-text'><div>{hex_num}</div><div>{hex_name_cn}</div></div></div>"
+                    # XÓA phần hex-img (chứa ☰, ☶). CHỈ giữ lại hex-text (Số và Tên)
+                    # Thêm 'text-align: center;' để 2 dòng căn giữa thẳng hàng với nhau rất đẹp
+                    outer_hex_html = f"<div class='bottom-left-hex' style='z-index: 1; color:{out_hex_color};'><div class='hex-text' style='text-align: center; align-items: center;'><div>{hex_num}</div><div>{hex_name_cn}</div></div></div>"
 
                 form_html = "".join([f"<div class='formation-item' style='color:{f_color};'>{f_name}</div>" for f_name, f_color in cung_status[p]])
                 html += f'<td class="qmdj-td">{kigaku_html}<div class="top-right-panel">{form_html}</div>{outer_hex_html}<div class="bottom-right-group"><div class="stem-col"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div></div></td>'
