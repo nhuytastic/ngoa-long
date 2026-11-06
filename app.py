@@ -492,8 +492,7 @@ def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="
                 is_bad = True
             if p == KIGAKU_OPPOSITE[BRANCH_TO_PALACE[breaker_branch]]: 
                 k_data[p]['d_forms'].append(vert(breaker_name, "#000000"))
-                is_bad = True
-            
+                is_bad = True  
 
         if s_val == 5 or is_bad:
             color = "#000000"
