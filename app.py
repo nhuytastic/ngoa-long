@@ -475,20 +475,32 @@ def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="
     
     for p in range(1, 10):
         s_val = current_stars[p]
-        # Nếu là số 5 thì màu Đen, còn lại tất cả đều màu Xám
-        if s_val == 5: color = "#000000"
-        else: color = "#999999"
+        is_bad = False # Cờ đánh dấu xem cung này có Hung tinh không
         
+        if p != 5: 
+            if p == cung_ban_menh_d: 
+                k_data[p]['d_forms'].append(vert("本命殺", "#000000"))
+                is_bad = True
+            if cung_ban_menh_d != 5 and p == KIGAKU_OPPOSITE[cung_ban_menh_d]: 
+                k_data[p]['d_forms'].append(vert("的殺", "#000000"))
+                is_bad = True
+            if p == cung_ngu_hoang_d: 
+                k_data[p]['d_forms'].append(vert("五黄殺", "#000000"))
+                is_bad = True
+            if cung_ngu_hoang_d != 5 and p == KIGAKU_OPPOSITE[cung_ngu_hoang_d]: 
+                k_data[p]['d_forms'].append(vert("暗剣殺", "#000000"))
+                is_bad = True
+            if p == KIGAKU_OPPOSITE[BRANCH_TO_PALACE[breaker_branch]]: 
+                k_data[p]['d_forms'].append(vert(breaker_name, "#000000"))
+                is_bad = True
+            
+
+        if s_val == 5 or is_bad:
+            color = "#000000"
+        else:
+            color = "#CC0000"
+            
         k_data[p]['stars']['d'] = (s_val, color) 
-            
-        if p == 5: continue 
-            
-        if p == cung_ban_menh_d: k_data[p]['d_forms'].append(vert("本命殺", "#000000"))
-        if cung_ban_menh_d != 5 and p == KIGAKU_OPPOSITE[cung_ban_menh_d]: k_data[p]['d_forms'].append(vert("的殺", "#000000"))
-        if p == cung_ngu_hoang_d: k_data[p]['d_forms'].append(vert("五黄殺", "#000000"))
-        if cung_ngu_hoang_d != 5 and p == KIGAKU_OPPOSITE[cung_ngu_hoang_d]: k_data[p]['d_forms'].append(vert("暗剣殺", "#000000"))
-        if p == KIGAKU_OPPOSITE[BRANCH_TO_PALACE[breaker_branch]]: k_data[p]['d_forms'].append(vert(breaker_name, "#000000"))
-        if p in [1, 9] and current_stars[p] == KIGAKU_OPPOSITE[p]: k_data[p]['d_forms'].append(vert("対冲", "#000000"))
             
     return k_data
 
@@ -999,11 +1011,9 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     global_lower_tri_scan = GATE_TO_TRIGRAM.get(global_lower_gate_scan, "天")
                     
                     out_upper_tri = TIEN_THIEN_MAP.get(target_palace, "天")
-                    out_eval = EVAL_DICT.get(out_upper_tri, {}).get(global_lower_tri_scan, "△")
-                    if out_eval == "〇": out_hex_color = "#CC0000"
-                    elif out_eval == "△": out_hex_color = "#B8860B"
-                    else: out_hex_color = "#000000"
 
+                    out_hex_color = "#999999"
+                    
                     # Đồng bộ hiển thị Số thứ tự và Tên tiếng Trung
                     hex_num, hex_name_cn = HEX_CHINESE_DICT.get((out_upper_tri, global_lower_tri_scan), (0, ""))
                     
