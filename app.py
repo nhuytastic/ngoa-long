@@ -511,9 +511,7 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
     
     # === TỰ ĐỘNG CHỈNH TỶ LỆ ===
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "5.5cqw"       
-    f_hex_img = "6cqw"     
-    f_hex_txt = "4.5cqw"   
+    f_can = "5.5cqw"       # Cỡ chữ chuẩn chung cho Can, Thần, Môn
     f_k_star = "4.5cqw"    
     f_form = "2.2cqw"    
         
@@ -522,44 +520,32 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
         * {{ box-sizing: border-box; }}
         body {{ margin: 0; padding: 0; }}
         
-        /* DÙNG FLEXBOX ĐỂ ÉP VÀO TÂM TUYỆT ĐỐI */
         .responsive-container {{ width: 100%; margin: 0 auto; container-type: inline-size; display: flex; justify-content: center; }}
         .qmdj-wrapper {{ width: 100%; aspect-ratio: 1 / 1; position: relative; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }}
         
-        /* BẢNG KỲ MÔN - XÓA TỌA ĐỘ ABSOLUTE ĐỂ FLEXBOX TỰ CĂN GIỮA */
         .qmdj-table {{ border-collapse: collapse; width: {tbl_w}; height: {tbl_h}; table-layout: fixed; background: #fff; z-index: 2; }}
         .qmdj-td {{ border: 1px solid #aaa; width: 33.33%; position: relative; vertical-align: top; padding: 1.5cqw; }}
         
         .top-right-panel {{ position: absolute; top: 1cqw; right: 1cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
         .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: {f_form};}}
         
-        .bottom-right-group {{ position: absolute; bottom: 1.5cqw; right: 1cqw; display: flex; flex-direction: row; align-items: flex-end;}}
-        .stem-col {{ display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
+        /* ĐƯA THIÊN BÀN / ĐỊA BÀN SANG GÓC DƯỚI BÊN TRÁI */
+        .bottom-left-stems {{ position: absolute; bottom: 1.5cqw; left: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
+        
+        /* ĐƯA THẦN / MÔN SANG GÓC DƯỚI BÊN PHẢI (CỠ CHỮ BẰNG VỚI CAN) */
+        .bottom-right-godgate {{ position: absolute; bottom: 1.5cqw; right: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; font-size: {f_can}; font-weight: bold; line-height: 1; }}
         
         .kigaku-col {{ position: absolute; top: 1cqw; left: 1cqw; display: flex; flex-direction: column; }}
         .k-row {{ display: flex; flex-direction: row; align-items: flex-start; gap: 1cqw;}}
         .k-star {{ font-size: {f_k_star}; font-weight: bold; width: 3cqw; text-align: center; line-height: 1;}}
         .k-forms {{ display: flex; flex-direction: row; gap: 0.5cqw; font-weight: bold; font-size: {f_form};}}
         
-        .bottom-left-hex {{ position: absolute; bottom: 1.5cqw; left: 1cqw; display: flex; flex-direction: row; align-items: center; gap: 1cqw; }}
-        .hex-img {{ display: flex; flex-direction: column; font-size: {f_hex_img}; line-height: 0.85; text-align: center; }}
-        .hex-text {{ display: flex; flex-direction: column; font-size: {f_hex_txt}; font-weight: bold; line-height: 1.1; }}
-        
-        /* 12 NGUYỆT TƯỚNG */
-        .moon-gen {{ position: absolute; font-size: 3.5cqw; font-weight: bold; transform: translate(-50%, -50%); white-space: nowrap; z-index: 1; }}
-        .pos-0 {{ top: 96%; left: 50%; }} .pos-1 {{ top: 96%; left: 23%; }} .pos-2 {{ top: 77%; left: 4%;  }}
-        .pos-3 {{ top: 50%; left: 4%;  }} .pos-4 {{ top: 23%; left: 4%;  }} .pos-5 {{ top: 4%;  left: 23%; }}
-        .pos-6 {{ top: 4%;  left: 50%; }} .pos-7 {{ top: 4%;  left: 77%; }} .pos-8 {{ top: 23%; left: 96%; }}
-        .pos-9 {{ top: 50%; left: 96%; }} .pos-10{{ top: 77%; left: 96%; }} .pos-11{{ top: 96%; left: 77%; }}
-        
-        /* NGŨ ĐỘN TRUNG CUNG */
         .wu-dun-center {{ position: absolute; bottom: 1.5cqw; left: 2cqw; font-size: 2.5cqw; font-weight: bold; line-height: 1.3; text-align: left; letter-spacing: 1px;}}
     </style>
     <div class="responsive-container">
         <div class="qmdj-wrapper">
     """
 
-    # VẼ LỚP: BÀN KỲ MÔN
     html += '<table class="qmdj-table">'
     for row in luoi_lac_thu:
         html += "<tr>"
@@ -575,30 +561,33 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
             t_style = f"font-weight: bold; color: {base_color}; font-size: {f_can}; text-decoration: {t_decor}; text-underline-offset: 3px; text-decoration-thickness: 2px; line-height: 1;"
             d_style = f"font-weight: bold; color: {base_color}; font-size: {f_can}; text-decoration: {d_decor}; text-underline-offset: 3px; text-decoration-thickness: 2px; line-height: 1;"
 
+            # Lấy thông tin Thần, Môn và Màu sắc
+            than_km = d.get('than', '')
+            mon_km = d.get('mon', '')
+            
+            # Khởi tạo màu (Nếu chưa có hàm màu Thần/Môn trong code cũ thì dùng mặc định màu Đen)
+            try: than_col = than_colors.get(p, "#000000")
+            except: than_col = "#000000"
+            try: mon_col = mon_colors.get(p, "#000000")
+            except: mon_col = "#000000"
+
             ds_val, ds_col = k_d['stars']['d']
             kigaku_html = f'<div class="kigaku-col"><div class="k-row"><div class="k-star" style="color:{ds_col};">{ds_val}</div><div class="k-forms">{"".join(k_d["d_forms"])}</div></div></div>'
 
+            # HTML cho Can (Góc Trái) và Thần/Môn (Góc Phải)
+            stems_html = f'<div class="bottom-left-stems"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div>'
+            godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
+
             if p == 5:
                 wudun_html = ""
-                # VẼ LỚP 3: NGŨ ĐỘN (Chỉ hiển thị nếu Thời bàn)
                 if loai_ban == "时家" and tdn_data:
                     final_ss, _, wd_color, _, _ = tdn_data
                     wudun_html = f"<div class='wu-dun-center' style='color:{wd_color};'>{'<br>'.join(final_ss)}</div>"
                     
-                html += f'<td class="qmdj-td">{kigaku_html}{wudun_html}<div class="bottom-right-group"><div class="stem-col"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div></div></td>'
+                html += f'<td class="qmdj-td">{kigaku_html}{wudun_html}{stems_html}{godgate_html}</td>'
             else:
-                outer_hex_html = ""
-                global_lower_tri = final_hex_data.get(p)
-                if global_lower_tri:
-                    out_upper_tri = TIEN_THIEN_MAP[p]
-                    
-                    # Tra cứu Số thứ tự và Tên tiếng Trung
-                    hex_num, hex_name_cn = HEX_CHINESE_DICT.get((out_upper_tri, global_lower_tri), (0, ""))
-                    
-                    outer_hex_html = f"<div class='bottom-left-hex' style='z-index: 1; color:#999999;'><div class='hex-text' style='text-align: left; align-items: flex-start;'><div>{hex_num}</div><div>{hex_name_cn}</div></div></div>"
-
                 form_html = "".join([f"<div class='formation-item' style='color:{f_color};'>{f_name}</div>" for f_name, f_color in cung_status[p]])
-                html += f'<td class="qmdj-td">{kigaku_html}<div class="top-right-panel">{form_html}</div>{outer_hex_html}<div class="bottom-right-group"><div class="stem-col"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div></div></td>'
+                html += f'<td class="qmdj-td">{kigaku_html}<div class="top-right-panel">{form_html}</div>{stems_html}{godgate_html}</td>'
         html += "</tr>"
     html += "</table></div></div>"
     
@@ -807,11 +796,10 @@ thoi_cat_list = format_ui_list(list(THOI_CAT_DICT.keys()))
 
 with st.container():
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
-    _, c1, c_gio, c2, c3, c4, c5, c6, _ = st.columns([0.1, 1, 0.8, 1, 1, 1, 1, 1, 0.1])
     
+    _, c1, c_gio, c2, c3, c4, c5, c6, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 1, 0.1])
     loc_huong = c1.selectbox("方向 (Hướng)", options=list(huong_list.keys()))
     loc_gio = c_gio.selectbox("时辰 (Giờ)", options=[""] + list(dia_chi), disabled=(loai_ban=="日家"))
-    
     loc_thien_can = c2.selectbox("天盤 (Thiên Bàn)", options=can_list)
     loc_dia_can = c3.selectbox("地盤 (Địa Bàn)", options=can_list)
     loc_mon = c4.selectbox("八门 (Bát Môn)", options=mon_list)
@@ -824,8 +812,6 @@ with st.container():
     loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "Có"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "Có"])
     loc_cat_cach = c13.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
-    
-    # Chỉ hiển thị Cát Thời / Cát Nhật nếu đang ở Thời Bàn
     options_cat_thoi = ["", "Có"] if loai_ban == "时家" else [""]
     loc_cat_thoi = c14.selectbox("吉时 (Cát Thời)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
     loc_cat_nhat = c15.selectbox("吉日 (Cát Nhật)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
@@ -1005,18 +991,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 if is_match:
                     ten_cung = [k for k, v in huong_list.items() if v == target_palace][0]
                     cach_cuc_cua_cung = cung_st_scan[target_palace]
-
-                    global_lower_gate_scan = scan_data[cung_phi_tinh_scan]['mon']
-                    global_lower_tri_scan = GATE_TO_TRIGRAM.get(global_lower_gate_scan, "天")
-                    
-                    out_upper_tri = TIEN_THIEN_MAP.get(target_palace, "天")
-
-                    out_hex_color = "#999999"
-                    
-                    # Đồng bộ hiển thị Số thứ tự và Tên tiếng Trung
-                    hex_num, hex_name_cn = HEX_CHINESE_DICT.get((out_upper_tri, global_lower_tri_scan), (0, ""))
-                    
-                    hex_html = f" | <span style='color:{out_hex_color}; font-weight:bold;'> {TRIGRAM_UNICODE[out_upper_tri]}/{TRIGRAM_UNICODE[global_lower_tri_scan]} {hex_num}-{hex_name_cn}</span>"
                     
                     d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                     raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
@@ -1034,11 +1008,12 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     if flat_d_forms:
                         kigaku_result_html += " (" + ", ".join(flat_d_forms) + ")"
                     
-                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, hex_html))
+
+                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html))
 
             if results:
                 st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, hex_html) in enumerate(results):
+                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html) in enumerate(results):
                     h_text = f" | Hướng: {cung_str}" if cung_str else ""
                     cach_text = f" | Dùng: **{d_cach}**" if d_cach else ""
                     
@@ -1050,7 +1025,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                             list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
                         cach_cuc_html = " ➔ " + ", ".join(list_html)
                         
-                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{hex_html}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
+                    # Loại bỏ hex_html khỏi màn hình in
+                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
                     st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
             else:
                 st.warning("Không tìm thấy ngày nào thỏa mãn TẤT CẢ các điều kiện trong 1 năm tới.")
