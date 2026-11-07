@@ -258,7 +258,6 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
         elif current_val < 1: current_val = 9
 
     luc_nghi_ngay = get_xun_leader(can_ngay, chi_ngay)
-    
     p_circle_list = [c for c, can in dia_ban.items() if can == luc_nghi_ngay] 
     p_circle = p_circle_list[0] if p_circle_list else 5
 
@@ -266,18 +265,13 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
     p_day_stem_list = [c for c, can in dia_ban.items() if can == target_stem]
     p_day_stem = p_day_stem_list[0] if p_day_stem_list else 5
 
+    # LẬP THIÊN BÀN - Áp dụng thuật toán ép Phục Ngâm khi dính Trung Cung
     if p_circle == 5:
-        for i in range(1, 10): 
-            cung_data[i]['thien'] = dia_ban[i]
-        
-        if p_day_stem != 5:
-            cung_data[p_day_stem]['thien'] = dia_ban[5]
-            cung_data[5]['thien'] = dia_ban[p_day_stem]
-
+        for i in WOLONG_OUTER_PALACES: cung_data[i]['thien'] = dia_ban[i] 
+        cung_data[5]['thien'] = dia_ban[5] 
     elif p_day_stem == 5:
         for i in WOLONG_OUTER_PALACES: cung_data[i]['thien'] = dia_ban[i] 
         cung_data[5]['thien'] = dia_ban[5] 
-        
     else:
         idx_source = WOLONG_OUTER_PALACES.index(p_circle)
         idx_target = WOLONG_OUTER_PALACES.index(p_day_stem)
@@ -286,27 +280,26 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
             cung_data[WOLONG_OUTER_PALACES[i]]['thien'] = dia_ban[WOLONG_OUTER_PALACES[(i - offset) % 8]]
         cung_data[5]['thien'] = dia_ban[5]
 
+    # LẬP BÁT MÔN - Áp dụng quy tắc "Tử Môn - Bay Thuận"
     s_steps = thien_can.index(can_ngay)
-    p_land = 5
-    if p_circle != 5:
-        s_steps = thien_can.index(can_ngay) + 1
-        seq = [1, 2, 3, 4, 5, 6, 7, 8, 9] if dun_type == "阳遁" else [9, 8, 7, 6, 5, 4, 3, 2, 1]
-        p_land = seq[(seq.index(p_circle) + s_steps - 1) % 9]
+    if p_circle == 5: seq = [1, 2, 3, 4, 5, 6, 7, 8, 9] 
+    else: seq = [1, 2, 3, 4, 5, 6, 7, 8, 9] if dun_type == "阳遁" else [9, 8, 7, 6, 5, 4, 3, 2, 1]
+    p_land = seq[(seq.index(p_circle) + s_steps) % 9]
 
-    if p_circle == 5:
+    if p_circle == 5: g_start = "死门" 
+    else: g_start = WOLONG_ORIGINAL_GATES[p_circle]
+
+    if s_steps == 0 or p_land == 5: 
         for p, door in WOLONG_ORIGINAL_GATES.items(): cung_data[p]['mon'] = door
     else:
-        g_start = WOLONG_ORIGINAL_GATES[p_circle]
-        if p_land == 5:
-            for p, door in WOLONG_ORIGINAL_GATES.items(): cung_data[p]['mon'] = door
-        else:
-            idx_land = WOLONG_OUTER_PALACES.index(p_land)
-            idx_gate = WOLONG_CLOCKWISE_GATES.index(g_start)
-            for i in range(8):
-                cung_data[WOLONG_OUTER_PALACES[(idx_land + i) % 8]]['mon'] = WOLONG_CLOCKWISE_GATES[(idx_gate + i) % 8]
-
+        idx_land = WOLONG_OUTER_PALACES.index(p_land)
+        idx_gate = WOLONG_CLOCKWISE_GATES.index(g_start)
+        for i in range(8):
+            cung_data[WOLONG_OUTER_PALACES[(idx_land + i) % 8]]['mon'] = WOLONG_CLOCKWISE_GATES[(idx_gate + i) % 8]
+            
     cung_data[5]['mon'] = "杜门" if dun_type == "阳遁" else "开门"
 
+    # LẬP CỬU TINH
     curr_star = daily_star 
     for cung in WOLONG_FLYING_PATH:
         cung_data[cung]['day_star'] = curr_star
@@ -321,6 +314,7 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
         cung_data[luoshu_9[idx_new]]['sao'] = ORIGINAL_STARS[i]
     cung_data[5]['sao'] = "" 
 
+    # LẬP BÁT THẦN
     anchor_palace = p_day_stem
     if anchor_palace == 5: anchor_palace = 8 if dun_type == "阳遁" else 7
         
@@ -338,17 +332,10 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
 # ==========================================
 def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
     FORMATION_RANKS = {
-        "天遁": 1, "地遁": 1, "人遁": 1, "神遁": 1, "鬼遁": 1,
-        "大格": 1, "小格": 1, "刑格": 1, "戦格": 1, "飛宮格": 1, "伏宮格": 1, 
-        "青竜逃走": 1, "白虎猖狂": 1, "熒惑入白": 1, "太白入熒": 1, "朱雀投江": 1, "螣蛇妖嬌": 1,
-        "青竜返首": 2, "飛鳥跌穴": 2, "玉女守門": 2, "乙奇得使": 2, "丙奇得使": 2, "丁奇得使": 2, 
-        "竜遁": 2, "虎遁": 2, "風遁": 2, "雲遁": 2, 
-        "乙奇入墓": 2, "丙奇入墓": 2, "丁奇入墓": 2,
-        "干伏吟": 2, "干反吟": 2, 
-        "乙奇昇殿": 3, "丙奇昇殿": 3, "丁奇昇殿": 3,
-        "星門伏吟": 3, "星門反吟": 3, "八門受制": 3, "六儀撃刑": 3
+        "天遁": 1, "地遁": 1, "人遁": 1, "神遁": 1, "鬼遁": 1, "大格": 1, "小格": 1, "刑格": 1, "戦格": 1, "飛宮格": 1, "伏宮格": 1, "青竜逃走": 1, "白虎猖狂": 1, "熒惑入白": 1, "太白入熒": 1, "朱雀投江": 1, "螣蛇妖嬌": 1,
+        "青竜返首": 2, "飛鳥跌穴": 2, "玉女守門": 2, "乙奇得使": 2, "丙奇得使": 2, "丁奇得使": 2, "竜遁": 2, "虎遁": 2, "風遁": 2, "雲遁": 2, "乙奇入墓": 2, "丙奇入墓": 2, "丁奇入墓": 2, "干伏吟": 2, "干反吟": 2, 
+        "乙奇昇殿": 3, "丙奇昇殿": 3, "丁奇昇殿": 3, "星門伏吟": 3, "星門反吟": 3, "八門受制": 3, "六儀撃刑": 3
     }
-    
     cung_status = {i: [] for i in range(1, 10)}
     can_can_data = {'甲':{'甲':'吉','乙':'凶','丙':'吉','丁':'吉','戊':'凶','己':'吉','庚':'大凶','辛':'凶','壬':'凶','癸':'吉'}, '乙':{'甲':'吉','乙':'凶','丙':'吉','丁':'吉','戊':'吉','己':'吉','庚':'凶','辛':'大凶','壬':'吉','癸':'凶'}, '丙':{'甲':'吉','乙':'吉','丙':'凶','丁':'吉','戊':'吉','己':'吉','庚':'大凶','辛':'吉','壬':'吉','癸':'凶'}, '丁':{'甲':'吉','乙':'吉','丙':'吉','丁':'吉','戊':'吉','己':'凶','庚':'吉','辛':'凶','壬':'吉','癸':'大凶'}, '戊':{'甲':'凶','乙':'吉','丙':'吉','丁':'吉','戊':'凶','己':'凶','庚':'凶','辛':'凶','壬':'吉','癸':'凶'}, '己':{'甲':'凶','乙':'吉','丙':'凶','丁':'凶','戊':'吉','己':'凶','庚':'凶','辛':'凶','壬':'凶','癸':'凶'}, '庚':{'甲':'大凶','乙':'凶','丙':'大凶','丁':'吉','戊':'凶','己':'大凶','庚':'大凶','辛':'凶','壬':'大凶','癸':'大凶'}, '辛':{'甲':'凶','乙':'大凶','丙':'凶','丁':'吉','戊':'凶','己':'凶','庚':'凶','辛':'凶','壬':'凶','癸':'凶'}, '壬':{'甲':'凶','乙':'凶','丙':'凶','丁':'吉','戊':'吉','己':'凶','庚':'凶','辛':'吉','壬':'凶','癸':'凶'}, '癸':{'甲':'吉','乙':'凶','丙':'吉','丁':'大凶','戊':'吉','己':'凶','庚':'大凶','辛':'凶','壬':'凶','癸':'凶'}}
 
@@ -382,12 +369,11 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         if t_can == '乙' and p == 4 and mon in ["休门", "生门", "开门"]: cung_status[p].append(("風遁", "#CC0000"))
         if t_can == '乙' and p == 2 and mon in ["休门", "生门", "开门"]: cung_status[p].append(("雲遁", "#CC0000"))
 
-        if (t_can == '己' and p == 2) or (t_can == '辛' and p == 9) or (t_can == '壬' and p == 4) or (t_can == '癸' and p == 4) or (t_can == '戊' and p == 3) or (t_can == '庚' and p == 8): 
-            cung_status[p].append(("六儀撃刑", "#000000"))
-            
+        if (t_can == '己' and p == 2) or (t_can == '辛' and p == 9) or (t_can == '壬' and p == 4) or (t_can == '癸' and p == 4) or (t_can == '戊' and p == 3) or (t_can == '庚' and p == 8): cung_status[p].append(("六儀撃刑", "#000000"))
         if t_can == '乙' and p == 2: cung_status[p].append(("乙奇入墓", "#000000"))
         if t_can == '丙' and p == 6: cung_status[p].append(("丙奇入墓", "#000000"))
         if t_can == '丁' and p == 6: cung_status[p].append(("丁奇入墓", "#000000"))
+        
         if t_can == '庚' and d_can == '癸': cung_status[p].append(("大格", "#000000"))
         if t_can == '庚' and d_can == '壬': cung_status[p].append(("小格", "#000000"))
         if t_can == '庚' and d_can == '己': cung_status[p].append(("刑格", "#000000"))
@@ -401,31 +387,18 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         if t_can == '丁' and d_can == '癸': cung_status[p].append(("朱雀投江", "#000000"))
         if t_can == '癸' and d_can == '丁': cung_status[p].append(("螣蛇妖嬌", "#000000"))
 
-        if (mon == "休门" and p == 9) or (mon == "景门" and p == 7) or (mon == "生门" and p == 1) or (mon == "开门" and p == 3):
-            cung_status[p].append(("八門受制", "#000000"))
-
+        if (mon == "休门" and p == 9) or (mon == "景门" and p == 7) or (mon == "生门" and p == 1) or (mon == "开门" and p == 3): cung_status[p].append(("八門受制", "#000000"))
         if t_can == d_can and t_can not in ['甲', '丁']: cung_status[p].append(("干伏吟", "#000000"))
-        if (t_can, d_can) in [('戊','辛'), ('辛','戊'), ('己','壬'), ('壬','己'), ('庚','癸'), ('癸','庚')]:
-            cung_status[p].append(("干反吟", "#000000"))
+        if (t_can, d_can) in [('戊','辛'), ('辛','戊'), ('己','壬'), ('壬','己'), ('庚','癸'), ('癸','庚')]: cung_status[p].append(("干反吟", "#000000"))
 
         sao_mon_goc = {"天蓬":"休门", "天芮":"死门", "天冲":"伤门", "天辅":"杜门", "天心":"开门", "天柱":"惊门", "天任":"生门", "天英":"景门"}
         mon_doi_xung = {"休门":"景门", "死门":"生门", "伤门":"惊门", "杜门":"开门", "开门":"杜门", "惊门":"伤门", "生门":"死门", "景门":"休门"}
-        
         if sao in sao_mon_goc:
             if mon == sao_mon_goc[sao]: cung_status[p].append(("星門伏吟", "#000000"))
             elif mon == mon_doi_xung[sao_mon_goc[sao]]: cung_status[p].append(("星門反吟", "#000000"))
 
-    tinh_mon_cat = {
-        "天蓬": ["生门", "开门"],
-        "天芮": ["休门", "景门", "开门"],
-        "天冲": ["休门", "生门", "景门", "开门"],
-        "天辅": ["休门", "生门", "景门"],
-        "天禽": [], 
-        "天心": ["休门", "生门", "景门", "开门"],
-        "天柱": ["休门", "生门", "景门", "开门"],
-        "天任": ["休门", "景门", "开门"],
-        "天英": ["生门", "开门"]
-    }
+    # LOGIC MÀU ĐỎ/ĐEN CỦA THẦN MÔN (THEO CODE MỚI)
+    tinh_mon_cat = {"天蓬": ["生门", "开门"], "天芮": ["休门", "景门", "开门"], "天冲": ["休门", "生门", "景门", "开门"], "天辅": ["休门", "生门", "景门"], "天禽": [], "天心": ["休门", "生门", "景门", "开门"], "天柱": ["休门", "生门", "景门", "开门"], "天任": ["休门", "景门", "开门"], "天英": ["生门", "开门"]}
     than_cat_chung = ["值符", "太阴", "六合", "九地", "九天"]
 
     stem_colors, mon_colors, than_colors = {i: "#000000" for i in range(1, 10)}, {i: "#000000" for i in range(1, 10)}, {i: "#000000" for i in range(1, 10)}
@@ -504,14 +477,13 @@ def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="
     return k_data
 
 # ==========================================
-# 5. GIAO DIỆN HTML RENDER 
+# 5. GIAO DIỆN HTML RENDER
 # ==========================================
-def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_tinh, kigaku_data, final_hex_data, tdn_data=None, loai_ban="日家"):
+def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colors, can_tuan, kigaku_data, tdn_data=None, loai_ban="日家"):
     luoi_lac_thu = [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
     
-    # === TỰ ĐỘNG CHỈNH TỶ LỆ ===
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "5.5cqw"       # Cỡ chữ chuẩn chung cho Can, Thần, Môn
+    f_can = "5.5cqw"       
     f_k_star = "4.5cqw"    
     f_form = "2.2cqw"    
         
@@ -519,28 +491,20 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
     <style>
         * {{ box-sizing: border-box; }}
         body {{ margin: 0; padding: 0; }}
-        
         .responsive-container {{ width: 100%; margin: 0 auto; container-type: inline-size; display: flex; justify-content: center; }}
         .qmdj-wrapper {{ width: 100%; aspect-ratio: 1 / 1; position: relative; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }}
-        
         .qmdj-table {{ border-collapse: collapse; width: {tbl_w}; height: {tbl_h}; table-layout: fixed; background: #fff; z-index: 2; }}
         .qmdj-td {{ border: 1px solid #aaa; width: 33.33%; position: relative; vertical-align: top; padding: 1.5cqw; }}
-        
         .top-right-panel {{ position: absolute; top: 1cqw; right: 1cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
         .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: {f_form};}}
         
-        /* ĐƯA THIÊN BÀN / ĐỊA BÀN SANG GÓC DƯỚI BÊN TRÁI */
         .bottom-left-stems {{ position: absolute; bottom: 1.5cqw; left: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
-        
-        /* ĐƯA THẦN / MÔN SANG GÓC DƯỚI BÊN PHẢI (CỠ CHỮ BẰNG VỚI CAN) */
         .bottom-right-godgate {{ position: absolute; bottom: 1.5cqw; right: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; font-size: {f_can}; font-weight: bold; line-height: 1; }}
         
         .kigaku-col {{ position: absolute; top: 1cqw; left: 1cqw; display: flex; flex-direction: column; }}
         .k-row {{ display: flex; flex-direction: row; align-items: flex-start; gap: 1cqw;}}
         .k-star {{ font-size: {f_k_star}; font-weight: bold; width: 3cqw; text-align: center; line-height: 1;}}
         .k-forms {{ display: flex; flex-direction: row; gap: 0.5cqw; font-weight: bold; font-size: {f_form};}}
-        
-        .wu-dun-center {{ position: absolute; bottom: 1.5cqw; left: 2cqw; font-size: 2.5cqw; font-weight: bold; line-height: 1.3; text-align: left; letter-spacing: 1px;}}
     </style>
     <div class="responsive-container">
         <div class="qmdj-wrapper">
@@ -561,36 +525,28 @@ def render_html_table(cung_data, cung_status, stem_colors, can_tuan, cung_phi_ti
             t_style = f"font-weight: bold; color: {base_color}; font-size: {f_can}; text-decoration: {t_decor}; text-underline-offset: 3px; text-decoration-thickness: 2px; line-height: 1;"
             d_style = f"font-weight: bold; color: {base_color}; font-size: {f_can}; text-decoration: {d_decor}; text-underline-offset: 3px; text-decoration-thickness: 2px; line-height: 1;"
 
-            # Lấy thông tin Thần, Môn và Màu sắc
             than_km = d.get('than', '')
             mon_km = d.get('mon', '')
-            
-            # Khởi tạo màu (Nếu chưa có hàm màu Thần/Môn trong code cũ thì dùng mặc định màu Đen)
-            try: than_col = than_colors.get(p, "#000000")
-            except: than_col = "#000000"
-            try: mon_col = mon_colors.get(p, "#000000")
-            except: mon_col = "#000000"
+            than_col = than_colors.get(p, "#000000")
+            mon_col = mon_colors.get(p, "#000000")
 
             ds_val, ds_col = k_d['stars']['d']
             kigaku_html = f'<div class="kigaku-col"><div class="k-row"><div class="k-star" style="color:{ds_col};">{ds_val}</div><div class="k-forms">{"".join(k_d["d_forms"])}</div></div></div>'
-
-            # HTML cho Can (Góc Trái) và Thần/Môn (Góc Phải)
             stems_html = f'<div class="bottom-left-stems"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div>'
-            godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
 
             if p == 5:
+                # Đưa Ngũ Độn vào vị trí góc dưới bên Phải
                 wudun_html = ""
                 if loai_ban == "时家" and tdn_data:
                     final_ss, _, wd_color, _, _ = tdn_data
-                    wudun_html = f"<div class='wu-dun-center' style='color:{wd_color};'>{'<br>'.join(final_ss)}</div>"
-                    
-                html += f'<td class="qmdj-td">{kigaku_html}{wudun_html}{stems_html}{godgate_html}</td>'
+                    wudun_html = f"<div class='bottom-right-godgate' style='color:{wd_color}; font-size: 2.2cqw; text-align: right; line-height: 1.2;'>{'<br>'.join(final_ss)}</div>"
+                html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{wudun_html}</td>'
             else:
+                godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
                 form_html = "".join([f"<div class='formation-item' style='color:{f_color};'>{f_name}</div>" for f_name, f_color in cung_status[p]])
                 html += f'<td class="qmdj-td">{kigaku_html}<div class="top-right-panel">{form_html}</div>{stems_html}{godgate_html}</td>'
         html += "</tr>"
     html += "</table></div></div>"
-    
     return html
 
 # ==========================================
@@ -712,7 +668,7 @@ tdn_data = None
 if loai_ban == "时家":
     tdn_data = get_tdn_data(l_month, l_day, chi_gio_idx)
     
-qimen_board_html = render_html_table(data, cung_st, stem_colors, can_tuan, cung_phi_tinh, kigaku_data, final_hex_data, tdn_data, loai_ban)
+qimen_board_html = render_html_table(data, cung_st, stem_colors, mon_colors, than_colors, can_tuan, kigaku_data, tdn_data, loai_ban)
 
 combined_html = f"""
 <div style="width: 100%; max-width: 450px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 10px;">
@@ -992,9 +948,15 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     ten_cung = [k for k, v in huong_list.items() if v == target_palace][0]
                     cach_cuc_cua_cung = cung_st_scan[target_palace]
                     
+                    # Bóc tách Thần và Môn kèm màu sắc
+                    res_than = scan_data[target_palace]['than']
+                    res_mon = scan_data[target_palace]['mon']
+                    res_than_col = than_colors_scan.get(target_palace, "#999999")
+                    res_mon_col = mon_colors_scan.get(target_palace, "#999999")
+                    
+                    # Bóc tách Khí học (Gộp chung thành 1 dòng)
                     d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                     raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
-                    
                     flat_d_forms = []
                     for form_html in raw_d_forms:
                         color_match = re.search(r"color:(#[0-9a-fA-F]{6})", form_html)
@@ -1003,19 +965,57 @@ if st.button("TÌM KIẾM", use_container_width=True):
                         flat_d_forms.append(f"<span style='color:{color}; font-weight:bold;'>{text}</span>")
                     
                     d_style = f"color:{d_star_col}; font-weight:bold; font-size:16px;"
+                    kigaku_result_html = f" | Khí Học: <span style='{d_style}'>{d_star_val}</span>"
+                    if flat_d_forms: kigaku_result_html += " (" + ", ".join(flat_d_forms) + ")"
                     
-                    kigaku_result_html = f"<br>↳ <i>Khí Học Nhật Tinh:</i> <span style='{d_style}'>{d_star_val}</span>"
-                    if flat_d_forms:
-                        kigaku_result_html += " (" + ", ".join(flat_d_forms) + ")"
-                    
+                    # NẾU LÀ THỜI BÀN -> TÍNH LUÔN NHẬT BÀN GẮN VÀO DƯỚI
+                    day_board_html = ""
+                    if loai_ban == "时家":
+                        day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else wl_ju_s
+                        day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, wl_ju_s)
+                        day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
+                        day_cung_st_scan, _, day_mon_colors, day_than_colors = qimen_analyzer_hojo(day_scan_data, day_can_tuan, day_p_land)
+                        
+                        day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
+                        day_kigaku = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
+                        
+                        d_than = day_scan_data[target_palace]['than']
+                        d_mon = day_scan_data[target_palace]['mon']
+                        d_than_col = day_than_colors.get(target_palace, "#999999")
+                        d_mon_col = day_mon_colors.get(target_palace, "#999999")
+                        
+                        d_star_val2, d_star_col2 = day_kigaku[target_palace]['stars']['d']
+                        raw_d_forms2 = day_kigaku[target_palace]['d_forms']
+                        flat_d_forms2 = []
+                        for form_html in raw_d_forms2:
+                            color_match = re.search(r"color:(#[0-9a-fA-F]{6})", form_html)
+                            color = color_match.group(1) if color_match else "#000000"
+                            text = re.sub(r"<[^>]+>", "", form_html) 
+                            flat_d_forms2.append(f"<span style='color:{color}; font-weight:bold;'>{text}</span>")
+                        
+                        d_style2 = f"color:{d_star_col2}; font-weight:bold; font-size:16px;"
+                        kigaku_day_html = f" | Khí Học: <span style='{d_style2}'>{d_star_val2}</span>"
+                        if flat_d_forms2: kigaku_day_html += " (" + ", ".join(flat_d_forms2) + ")"
+                        
+                        day_cach_cuc_html = ""
+                        if day_cung_st_scan[target_palace]:
+                            list_html = []
+                            for name, color in day_cung_st_scan[target_palace]:
+                                clean_name = re.sub(r"<[^>]+>", "", name)
+                                list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
+                            day_cach_cuc_html = " ➔ " + ", ".join(list_html)
+                            
+                        day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> Ngày {can_ngay_scan}{chi_ngay_scan} | <span style='color:{d_than_col}; font-weight:bold;'>{d_than}</span> - <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{day_cach_cuc_html}{kigaku_day_html}"
 
-                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html))
+                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html))
 
             if results:
                 st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html) in enumerate(results):
+                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html) in enumerate(results):
                     h_text = f" | Hướng: {cung_str}" if cung_str else ""
                     cach_text = f" | Dùng: **{d_cach}**" if d_cach else ""
+                    
+                    than_mon_html = f" | <span style='color:{t_col}; font-weight:bold;'>{t_name}</span> - <span style='color:{m_col}; font-weight:bold;'>{m_name}</span>"
                     
                     cach_cuc_html = ""
                     if cach_cuc_cua_cung:
@@ -1025,8 +1025,9 @@ if st.button("TÌM KIẾM", use_container_width=True):
                             list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
                         cach_cuc_html = " ➔ " + ", ".join(list_html)
                         
-                    # Loại bỏ hex_html khỏi màn hình in
-                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
+                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{than_mon_html}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
+                    if day_board_html:
+                        st.markdown(day_board_html, unsafe_allow_html=True)
                     st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
             else:
                 st.warning("Không tìm thấy ngày nào thỏa mãn TẤT CẢ các điều kiện trong 1 năm tới.")
