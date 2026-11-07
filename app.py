@@ -455,7 +455,7 @@ def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="
     
     def vert(text, color):
         chars = "<br>".join(list(text))
-        return f"<div style='color:{color}; text-align:center; font-size: 10.5px; line-height: 1.15;'>{chars}</div>"
+        return f"<div style='color:{color}; text-align:center; line-height: 1.15;'>{chars}</div>"
     
     for p in range(1, 10):
         s_val = current_stars[p]
@@ -496,7 +496,7 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
     tbl_w, tbl_h = "100%", "100%"
     f_can = "5.5cqw"       
     f_k_star = "4.5cqw"    
-    f_form = "2.2cqw"    
+    f_form = "2.4cqw"  # CỠ CHỮ CHUẨN DÙNG CHUNG CHO CẢ 3 KHỐI DỌC 
         
     html = f"""
     <style>
@@ -506,17 +506,24 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
         .qmdj-wrapper {{ width: 100%; aspect-ratio: 1 / 1; position: relative; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }}
         .qmdj-table {{ border-collapse: collapse; width: {tbl_w}; height: {tbl_h}; table-layout: fixed; background: #fff; z-index: 2; }}
         .qmdj-td {{ border: 1px solid #aaa; width: 33.33%; position: relative; vertical-align: top; padding: 1.5cqw; }}
-        .top-right-panel {{ position: absolute; top: 1cqw; right: 1cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
+        
+        /* CĂN LỀ PHẢI ĐỒNG BỘ CHO CÁCH CỤC (right: 1.5cqw) */
+        .top-right-panel {{ position: absolute; top: 1cqw; right: 1.5cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
         .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: {f_form};}}
         
         .bottom-left-stems {{ position: absolute; bottom: 1.5cqw; left: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
+        
+        /* LỀ PHẢI CỦA THẦN/MÔN ĐÃ LÀ 1.5cqw */
         .bottom-right-godgate {{ position: absolute; bottom: 1.5cqw; right: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; font-size: {f_can}; font-weight: bold; line-height: 1; }}
         
         .kigaku-col {{ position: absolute; top: 1cqw; left: 1cqw; display: flex; flex-direction: column; }}
         .k-row {{ display: flex; flex-direction: row; align-items: flex-start; gap: 1cqw;}}
+        
+        /* ÉP KHÍ HỌC DÙNG CỠ CHỮ CHUẨN CỦA CÁCH CỤC */
         .k-star {{ font-size: {f_k_star}; font-weight: bold; width: 3cqw; text-align: center; line-height: 1;}}
         .k-forms {{ display: flex; flex-direction: row; gap: 0.5cqw; font-weight: bold; font-size: {f_form};}}
     </style>
+
     <div class="responsive-container">
         <div class="qmdj-wrapper">
     """
@@ -549,7 +556,7 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
                 wudun_html = ""
                 if loai_ban == "时家" and tdn_data:
                     final_ss, _, wd_color, _, _ = tdn_data
-                    wudun_html = f"<div style='position: absolute; top: 1.5cqw; right: 1.5cqw; color:{wd_color}; font-size: 2.2cqw; text-align: right; line-height: 1.2; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
+                    wudun_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color:{wd_color}; font-size: {f_form}; text-align: center; line-height: 1.15; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
                 html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{wudun_html}</td>'
             else:
                 godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
