@@ -63,7 +63,6 @@ HEX_NAME_DICT = {
     ("风","泽"): "Trung Phu", ("雷","山"): "Tiểu Quá", ("水","火"): "Ký Tế", ("火","水"): "Vị Tế"
 }
 
-# TỪ ĐIỂN TÊN QUẺ TIẾNG TRUNG & SỐ THỨ TỰ (1-64)
 HEX_CHINESE_DICT = {
     ("天","天"): (1, "乾"), ("地","地"): (2, "坤"), ("水","雷"): (3, "屯"), ("山","水"): (4, "蒙"),
     ("水","天"): (5, "需"), ("天","水"): (6, "訟"), ("地","水"): (7, "師"), ("水","地"): (8, "比"),
@@ -159,9 +158,9 @@ def get_custom_lunar_day_data(solar_date):
     
     return l_month, l_day, is_leap, can, chi, dun_type, star, wl_jieqi, wl_yuan
 
-# ================= LOGIC THIÊN ĐỊA NHÂN =================
+# ================= LOGIC LỤC DIỆU =================
 def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
-    # 1. TÍNH NGŨ ĐỘN - THIÊN ĐỊA NHÂN
+    # 1. TÍNH LỤC DIỆU ĐẠO GIA
     ss_base_ch = ['贵人', '印财', '退财', '五鬼', '阳虎', '阴虎']
     hour_num = chi_gio_idx + 1
     base_month = (lunar_month - 2) % 6
@@ -181,7 +180,7 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
         elif ss == '阴虎' and can_transform: final_ss.append('副官')
         else: final_ss.append(ss)
         
-    # Chấm điểm Ngũ Độn (Thiên Địa Nhân)
+    # Chấm điểm Lục Diệu
     ss_set = set(final_ss)
     wd_status, wd_color = "XẤU", "#000000"
     
@@ -212,7 +211,7 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
         if is_tot:
             wd_status, wd_color = "TỐT", "#CC0000"
 
-    # 2. TÍNH TAM THẦN TỨ TƯỚNG (DỰ ĐOÁN)
+    # 2. TÍNH TAM THẦN TỨ TƯỚNG
     month_starts = {1: 1, 2: 0, 3: 11, 4: 10, 5: 9, 6: 10, 7: 11, 8: 0, 9: 1, 10: 2, 11: 3, 12: 2}
     base_cung = month_starts[lunar_month]
     cung_thang = (base_cung + lunar_month - 1) % 12
@@ -232,7 +231,7 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
     tc_status = "XẤU"
     for i, name in enumerate(gen_names):
         pos = (thien_cuong + i) % 12
-        color = "#999999" # Xám nhạt mặc định
+        color = "#999999"
         if name in tc_eval and pos in [0, 3, 6, 9]:
             status, color = tc_eval[name][pos]
             if status in ["TỐT", "BÌNH"]: tc_status = status
@@ -408,7 +407,7 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
             if mon == sao_mon_goc[sao]: cung_status[p].append(("星門伏吟", "#000000"))
             elif mon == mon_doi_xung[sao_mon_goc[sao]]: cung_status[p].append(("星門反吟", "#000000"))
 
-    # LOGIC MÀU ĐỎ/ĐEN CỦA THẦN MÔN (THEO CODE MỚI)
+    # LOGIC MÀU ĐỎ/ĐEN CỦA THẦN - MÔN
     tinh_mon_cat = {"天蓬": ["生门", "开门"], "天芮": ["休门", "景门", "开门"], "天冲": ["休门", "生门", "景门", "开门"], "天辅": ["休门", "生门", "景门"], "天禽": [], "天心": ["休门", "生门", "景门", "开门"], "天柱": ["休门", "生门", "景门", "开门"], "天任": ["休门", "景门", "开门"], "天英": ["生门", "开门"]}
     than_cat_chung = ["值符", "太阴", "六合", "九地", "九天"]
 
@@ -667,9 +666,9 @@ can_tuan = get_xun_leader(wl_can, wl_chi)
 cung_st, stem_colors, mon_colors, than_colors = qimen_analyzer_hojo(data, can_tuan, p_land)
 title = ""
 
-# 6. KHÍ HỌC (KIGAKU)
+# 6. KHÍ HỌC
 cung_day_stars = {p: data[p]['day_star'] for p in range(1, 10)}
-# Biến breaker_chi lấy trực tiếp wl_chi để tự động ăn theo Hoa giáp ghi đè
+# Biến breaker_chi lấy trực tiếp wl_chi để tự động theo Hoa giáp ghi đè
 breaker_chi = wl_chi 
 kigaku_data = evaluate_kigaku_formations(user_birth_star, cung_day_stars, breaker_chi, loai_ban)
 
@@ -680,7 +679,7 @@ final_hex_data = {}
 for p in range(1, 10):
     if p != 5: final_hex_data[p] = global_lower_tri_final
 
-# 6.5 THIÊN ĐỊA NHÂN (Chỉ lấy data nếu Thời Bàn)
+# 7. LỤC DIỆU (Chỉ lấy data nếu Thời Bàn)
 tdn_data = None
 if loai_ban == "时家":
     tdn_data = get_tdn_data(l_month, l_day, chi_gio_idx)
@@ -786,7 +785,7 @@ with st.container():
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "Có"])
     loc_cat_cach = c13.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
     options_cat_thoi = ["", "Có"] if loai_ban == "时家" else [""]
-    loc_cat_thoi = c14.selectbox("吉时 (Cát Thời)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
+    loc_cat_thoi = c14.selectbox("六曜 (Lục Diệu)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
     loc_cat_nhat = c15.selectbox("吉日 (Cát Nhật)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
 
 def find_fulfilled_plan(plan_list, d_cung, status_cung, can_tuan_scan):
