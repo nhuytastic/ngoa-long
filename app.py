@@ -158,9 +158,9 @@ def get_custom_lunar_day_data(solar_date):
     
     return l_month, l_day, is_leap, can, chi, dun_type, star, wl_jieqi, wl_yuan
 
-# ================= LOGIC LỤC DIỆU =================
+# ================= LOGIC NGŨ ĐỘN =================
 def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
-    # 1. TÍNH LỤC DIỆU ĐẠO GIA
+    # 1. TÍNH NGŨ ĐỘN ĐẠO GIA
     ss_base_ch = ['贵人', '印财', '退财', '五鬼', '阳虎', '阴虎']
     hour_num = chi_gio_idx + 1
     base_month = (lunar_month - 2) % 6
@@ -180,7 +180,7 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
         elif ss == '阴虎' and can_transform: final_ss.append('副官')
         else: final_ss.append(ss)
         
-    # Chấm điểm Lục Diệu
+    # Chấm điểm Ngũ Độn
     ss_set = set(final_ss)
     wd_status, wd_color = "XẤU", "#000000"
     
@@ -495,7 +495,7 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
     tbl_w, tbl_h = "100%", "100%"
     f_can = "5.5cqw"       
     f_k_star = "4.5cqw"    
-    f_form = "2.4cqw"  # CỠ CHỮ CHUẨN DÙNG CHUNG CHO CẢ 3 KHỐI DỌC 
+    f_form = "2.4cqw"  
         
     html = f"""
     <style>
@@ -679,7 +679,7 @@ final_hex_data = {}
 for p in range(1, 10):
     if p != 5: final_hex_data[p] = global_lower_tri_final
 
-# 7. LỤC DIỆU (Chỉ lấy data nếu Thời Bàn)
+# 7. NGŨ ĐỘN (Chỉ lấy data nếu Thời Bàn)
 tdn_data = None
 if loai_ban == "时家":
     tdn_data = get_tdn_data(l_month, l_day, chi_gio_idx)
@@ -785,7 +785,7 @@ with st.container():
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "Có"])
     loc_cat_cach = c13.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
     options_cat_thoi = ["", "Có"] if loai_ban == "时家" else [""]
-    loc_cat_thoi = c14.selectbox("六曜 (Lục Diệu)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
+    loc_cat_thoi = c14.selectbox("五遁 (Ngũ Độn)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
     loc_cat_nhat = c15.selectbox("吉日 (Cát Nhật)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
 
 def find_fulfilled_plan(plan_list, d_cung, status_cung, can_tuan_scan):
@@ -920,7 +920,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                         if raw_k_forms.intersection(bad_forms):
                             return False, ""
 
-                    # KIỂM TRA CÁT THỜI (Chỉ chạy khi chọn Thời Bàn, xét theo Ngũ Độn - Thiên Địa Nhân)
+                    # KIỂM TRA CÁT THỜI (Chỉ chạy khi chọn Thời Bàn, xét theo Ngũ Độn)
                     if loai_ban == "时家" and loc_cat_thoi == "Có":
                         _, wd_status, _, _, _ = get_tdn_data(l_month_s, l_day_s, chi_gio_idx)
                         if wd_status != "TỐT": return False, ""
@@ -970,7 +970,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     res_than_col = than_colors_scan.get(target_palace, "#999999")
                     res_mon_col = mon_colors_scan.get(target_palace, "#999999")
                     
-                    # Bóc tách Khí học (Gộp chung thành 1 dòng)
                     d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                     raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
                     flat_d_forms = []
@@ -984,7 +983,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     kigaku_result_html = f" | Khí Học: <span style='{d_style}'>{d_star_val}</span>"
                     if flat_d_forms: kigaku_result_html += " (" + ", ".join(flat_d_forms) + ")"
                     
-                    # NẾU LÀ THỜI BÀN -> TÍNH LUÔN NHẬT BÀN GẮN VÀO DƯỚI
                     day_board_html = ""
                     if loai_ban == "时家":
                         day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
