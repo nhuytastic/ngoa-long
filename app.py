@@ -842,6 +842,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
             loops = 0
             while loops < max_limit: 
                 if len(results) >= 10: break 
+                
                 loops += 1
                 ly_text_in_ra = ""
                 gio_ly = ""
@@ -875,10 +876,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
                     chi_gio_scan = dia_chi[chi_gio_idx]
                     
-                    # BÓC TÁCH 5 BIẾN TỪ HÀM LỤC DIỆU/NGŨ ĐỘN (CÓ CHỨA TRẠNG THÁI WD_STATUS)
                     _, _, gio_ly, ly_text_in_ra, wd_status = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
                     
-                    # LỌC SIÊU NHANH
                     if loc_gio and chi_gio_scan != loc_gio: continue
                     if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
                     if loc_ngu_don and wd_status != loc_ngu_don: continue
@@ -895,38 +894,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
 
                 cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
                 cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
-                    kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, chi_ngay_scan, "日家")
-                    
-                    time_str = f"{current_scan_dt.strftime('%d/%m/%Y')}"
-                    c_str = f"{wl_dun_s} {wl_ju_s}局 | Ngày {can_ngay_scan}{chi_ngay_scan}"
-                    
-                else:
-                    current_scan_dt += timedelta(hours=2) 
-                    s_date = current_scan_dt.date() + timedelta(days=1) if current_scan_dt.hour >= 23 else current_scan_dt.date()
-                    
-                    l_month_s, l_day_s, is_leap_s, can_ngay_scan, chi_ngay_scan, wl_dun_s, day_star_s, wl_jieqi_s, wl_yuan_s = get_custom_lunar_day_data(s_date)
-                    
-                    chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
-                    chi_gio_scan = dia_chi[chi_gio_idx]
-                    
-                    _, _, gio_ly, ly_text_in_ra = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
-                    
-                    if loc_gio and chi_gio_scan != loc_gio: continue
-                    if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
-                        
-                    can_gio_scan = get_wushu_dun(can_ngay_scan, chi_gio_scan)
-                    wl_ju_s = calculate_correct_ju(wl_yuan_s, can_gio_scan, chi_gio_scan, wl_jieqi_s, huong_son)
-                    daily_star_scan = get_hour_nine_star(chi_ngay_scan, chi_gio_scan, wl_dun_s)
-                    
-                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_gio_scan, chi_gio_scan, wl_dun_s, wl_ju_s, daily_star_scan)
-                    can_tuan_scan = get_xun_leader(can_gio_scan, chi_gio_scan)
-                    
-                    time_str = f"{current_scan_dt.strftime('%d/%m/%Y')} {current_scan_dt.strftime('%H:%M')}"
-                    c_str = f"Ngày {can_ngay_scan}{chi_ngay_scan} {can_gio_scan}{chi_gio_scan}时 | {wl_dun_s}{wl_ju_s}局"
-
-                cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
-                cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
-                
                 breaker_chi_scan = chi_ngay_scan if loai_ban == "日家" else chi_gio_scan
                 kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, breaker_chi_scan, loai_ban)
                 val_cat_cach = extract_raw_name(loc_cat_cach)
@@ -941,7 +908,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     if loc_thien_can and t_chk != loc_thien_can: return False, ""
                     if loc_dia_can and d_chk != loc_dia_can: return False, ""
                     if loc_mon and d['mon'] != loc_mon: return False, ""
-                    if loc_tinh and d['sao'] != loc_tinh: return False, ""
                     if loc_than and d['than'] != loc_than: return False, ""
                     
                     if val_cat_cach:
@@ -1000,8 +966,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     day_board_html = ""
                     if loai_ban == "时家":
                         day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
-                        
-                        # Truyền đúng 5 tham số cho hàm lap_que_wolong
                         day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
                         day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
                         
