@@ -1,4 +1,4 @@
-# ... (phần trên giữ nguyên) ...
+# ... (phần hàm get_luc_than giữ nguyên) ...
     def get_luc_than(khach_idx, ta_idx):
         e_khach, e_ta = elements[khach_idx], elements[ta_idx]
         if e_khach == e_ta: return '兄弟'
@@ -9,15 +9,17 @@
         if khac[e_khach] == e_ta: return '官鬼'
         if khac[e_ta] == e_khach: return '妻财'
 
-    # ĐỔI ĐỊNH DẠNG: Tên Lục Diệu (Lục Thân)
-    str_thang_html = f"{names[idx_month]} ({get_luc_than(idx_month, idx_hour)})"
-    str_ngay_html  = f"{names[idx_day]} ({get_luc_than(idx_day, idx_hour)})"
+    # 1. ĐỊNH DẠNG CHO BÀN CỜ TRUNG CUNG (Giữ nguyên như cũ: Lục Thân - Lục Diệu)
+    str_thang_html = f"{get_luc_than(idx_month, idx_hour)} - {names[idx_month]}"
+    str_ngay_html  = f"{get_luc_than(idx_day, idx_hour)} - {names[idx_day]}"
     str_gio_html   = f"{names[idx_hour]}"
-    
-    # 1. Hiển thị viết dọc ở Trung Cung (Ngăn cách bằng thẻ <br>)
     final_liu_yao_html = f"{str_thang_html}<br>{str_ngay_html}<br>{str_gio_html}"
     
-    # 2. Hiển thị viết ngang ở dòng Kết quả Module 7 (Ngăn cách bằng dấu phẩy)
-    final_liu_yao_text = f"[{str_thang_html}, {str_ngay_html}, {str_gio_html}]"
+    # 2. ĐỊNH DẠNG CHO MODULE 7 KẾT QUẢ TÌM KIẾM (Mới: Lục Diệu (Lục Thân))
+    str_thang_text = f"{names[idx_month]} ({get_luc_than(idx_month, idx_hour)})"
+    str_ngay_text  = f"{names[idx_day]} ({get_luc_than(idx_day, idx_hour)})"
+    str_gio_text   = f"{names[idx_hour]}"
+    final_liu_yao_text = f"[{str_thang_text}, {str_ngay_text}, {str_gio_text}]"
         
-    return final_ss, final_liu_yao_html, str_gio_html, final_liu_yao_text
+    # Trả về 4 biến: Ngũ Độn, Chuỗi HTML Bàn Cờ, Tên Diệu Giờ (Để Lọc), Chuỗi Text Module 7
+    return final_ss, final_liu_yao_html, str_gio_text, final_liu_yao_text
