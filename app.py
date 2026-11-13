@@ -910,7 +910,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     _, day_stem_colors_scan, _, _ = qimen_analyzer_hojo(day_scan_data, day_can_tuan_leader, day_p_land)
                     
                     day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
-                    day_kigaku_scan = evaluate_kigaku_formations(user_birth_star, day_cung_day_stars, chi_ngay_scan, "日家")
+                    
+                    day_kigaku_scan = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
                 # ========================================================
 
                 target_palace = huong_list[loc_huong] 
