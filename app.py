@@ -818,7 +818,6 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 if len(results) >= 10: break 
                 
                 loops += 1
-                
                 ly_text_in_ra = ""
                 gio_ly = ""
                 
@@ -832,12 +831,13 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     chi_ngay_scan = dia_chi[gz_scan.dz]
                     
                     wl_dun_s, wl_ju_s, _ = calculate_exact_daily_ju(current_scan_dt, s_date, selected_tz)
-                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_ju_s, chi_ngay_scan, wl_ju_s)
+                    
+                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_ju_s, wl_ju_s)
                     can_tuan_scan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
                     cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
                     
-                    cung_day_stars_scan = {p: scan_data[p]['hour_star'] for p in range(1, 10)}
-                    kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, current_scan_dt, cung_day_stars_scan)
+                    cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
+                    kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, chi_ngay_scan, "日家")
                     
                     time_str = f"{current_scan_dt.strftime('%d/%m/%Y')}"
                     c_str = f"{wl_dun_s} {wl_ju_s}局 | Ngày {can_ngay_scan}{chi_ngay_scan}"
@@ -851,10 +851,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
                     chi_gio_scan = dia_chi[chi_gio_idx]
                     
-                    # TÍNH LỤC DIỆU
                     _, _, gio_ly, ly_text_in_ra = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
                     
-                    # LỌC GIỜ BẰNG LỤC DIỆU HOẶC ĐỊA CHI
                     if loc_gio and chi_gio_scan != loc_gio: continue
                     if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
                         
@@ -862,18 +860,17 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     wl_ju_s = calculate_correct_ju(wl_yuan_s, can_gio_scan, chi_gio_scan, wl_jieqi_s, huong_son)
                     daily_star_scan = get_hour_nine_star(chi_ngay_scan, chi_gio_scan, wl_dun_s)
                     
-                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_gio_scan, chi_gio_scan, wl_dun_s, wl_ju_s, chi_ngay_scan, daily_star_scan)
+                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_gio_scan, chi_gio_scan, wl_dun_s, wl_ju_s, daily_star_scan)
                     can_tuan_scan = get_xun_leader(can_gio_scan, chi_gio_scan)
                     
                     time_str = f"{current_scan_dt.strftime('%d/%m/%Y')} {current_scan_dt.strftime('%H:%M')}"
                     c_str = f"Ngày {can_ngay_scan}{chi_ngay_scan} {can_gio_scan}{chi_gio_scan}时 | {wl_dun_s}{wl_ju_s}局"
 
                 cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
-                cung_day_stars_scan = {p: scan_data[p]['hour_star'] for p in range(1, 10)}
+                cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
                 
-                # Biến breaker chi
                 breaker_chi_scan = chi_ngay_scan if loai_ban == "日家" else chi_gio_scan
-                kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, current_scan_dt, cung_day_stars_scan)
+                kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, breaker_chi_scan, loai_ban)
                 val_cat_cach = extract_raw_name(loc_cat_cach)
 
                 target_palace = huong_list[loc_huong] 
@@ -929,7 +926,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     res_than_col = than_colors_scan.get(target_palace, "#999999")
                     res_mon_col = mon_colors_scan.get(target_palace, "#999999")
                     
-                    d_star_val, d_star_col, is_nhan_hoa = kigaku_data_scan[target_palace]['stars']['d']
+                    d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                     raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
                     flat_d_forms = []
                     for form_html in raw_d_forms:
@@ -938,21 +935,22 @@ if st.button("TÌM KIẾM", use_container_width=True):
                         text = re.sub(r"<[^>]+>", "", form_html) 
                         flat_d_forms.append(f"<span style='color:{color}; font-weight:bold;'>{text}</span>")
                     
-                    d_style = f"color:{d_star_col}; font-weight:bold; font-size:16px; text-decoration:underline; text-decoration-color:#CC0000; text-decoration-thickness: 2px; text-underline-offset: 3px;" if is_nhan_hoa else f"color:{d_star_col}; font-weight:bold; font-size:16px;"
-                    
+                    d_style = f"color:{d_star_col}; font-weight:bold; font-size:16px;"
                     kigaku_result_html = f" | Khí Học: <span style='{d_style}'>{d_star_val}</span>"
                     if flat_d_forms: kigaku_result_html += " (" + ", ".join(flat_d_forms) + ")"
                     
                     day_board_html = ""
                     if loai_ban == "时家":
                         day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
-                        day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, chi_ngay_scan, day_star_s)
+                        
+                        # Truyền đúng 5 tham số cho hàm lap_que_wolong
+                        day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
                         day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
                         
                         day_cung_st_scan, day_stem_colors, day_mon_colors, day_than_colors = qimen_analyzer_hojo(day_scan_data, day_can_tuan, day_p_land)
                         
-                        day_cung_day_stars = {p: day_scan_data[p]['hour_star'] for p in range(1, 10)}
-                        day_kigaku = evaluate_kigaku_formations(user_birth_star, current_scan_dt, day_cung_day_stars)
+                        day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
+                        day_kigaku = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
                         
                         d_than = day_scan_data[target_palace]['than']
                         d_mon = day_scan_data[target_palace]['mon']
@@ -963,7 +961,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                         d_mon_col = day_mon_colors.get(target_palace, "#999999")
                         d_stem_col = day_stem_colors.get(target_palace, "#000000")
                         
-                        d_star_val2, d_star_col2, _ = day_kigaku[target_palace]['stars']['d']
+                        d_star_val2, d_star_col2 = day_kigaku[target_palace]['stars']['d']
                         raw_d_forms2 = day_kigaku[target_palace]['d_forms']
                         flat_d_forms2 = []
                         for form_html in raw_d_forms2:
