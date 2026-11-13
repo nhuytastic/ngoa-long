@@ -531,8 +531,7 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
                     wudun_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color:{wd_color}; font-size: {f_form}; text-align: center; line-height: 1.15; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
                     
                     # Lục Diệu (Góc dưới bên phải)
-                    ly_vert = "<br>".join(list(final_liu_yao))
-                    liuyao_html = f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; color: #999999; font-size: {f_form}; text-align: center; line-height: 1.15; font-weight: bold;'>{ly_vert}</div>"
+                    liuyao_html = f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; color: #999999; font-size: {f_form}; text-align: center; line-height: 1.15; font-weight: bold;'>{final_liu_yao}</div>"
                 
                 html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{wudun_html}{liuyao_html}</td>'
             else:
