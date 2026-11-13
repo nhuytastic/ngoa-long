@@ -178,6 +178,7 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx, is_leap=False):
     for ss in raw_ss:
         if ss == '阳虎' and can_transform: final_ss.append('正官')
         elif ss == '阴虎' and can_transform: final_ss.append('副官')
+        elif ss == '退财': final_ss.append("<span style='color:#000000;'>退财</span>")
         else: final_ss.append(ss)
 
     # 2. TÍNH LỤC DIỆU (CÓ LỤC THÂN & THÁNG NHUẬN)
@@ -534,9 +535,9 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
                 if loai_ban == "时家" and tdn_data:
                     final_ss, final_liu_yao_html, _, _ = tdn_data
                     
-                    liuyao_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.15; font-weight: bold;'>{final_liu_yao_html}</div>"
+                    liuyao_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.6; font-weight: bold;'>{final_liu_yao_html}</div>"
 
-                    wudun_html = f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.15; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
+                    wudun_html = f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.4; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
                     
                 html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{liuyao_html}{wudun_html}</td>'
             else:
@@ -773,6 +774,7 @@ with st.container():
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "Có"])
     loc_cat_cach = c13.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
     options_luc_dieu = ["", "大安", "留连", "速喜", "赤口", "小吉", "空亡"] if loai_ban == "时家" else [""]
+    options_cat_nhat = ["", "Có"] if loai_ban == "时家" else [""]
     loc_luc_dieu = c14.selectbox("六曜 (Lục Diệu)", options=options_luc_dieu, disabled=(loai_ban=="日家"))
     loc_cat_nhat = c15.selectbox("吉日 (Cát Nhật)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
 
