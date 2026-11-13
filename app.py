@@ -898,6 +898,21 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, breaker_chi_scan, loai_ban)
                 val_cat_cach = extract_raw_name(loc_cat_cach)
 
+                # ========================================================
+                # 1. LẬP NHẬT BÀN NGẦM (Chỉ chạy khi có yêu cầu lọc Cát Nhật)
+                # ========================================================
+                day_stem_colors_scan = {}
+                day_kigaku_scan = {}
+                if loai_ban == "时家" and loc_cat_nhat == "Có":
+                    day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
+                    day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
+                    day_can_tuan_leader = get_xun_leader(can_ngay_scan, chi_ngay_scan)
+                    _, day_stem_colors_scan, _, _ = qimen_analyzer_hojo(day_scan_data, day_can_tuan_leader, day_p_land)
+                    
+                    day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
+                    day_kigaku_scan = evaluate_kigaku_formations(user_birth_star, day_cung_day_stars, chi_ngay_scan, "日家")
+                # ========================================================
+
                 target_palace = huong_list[loc_huong] 
 
                 def check_match(p):
@@ -905,18 +920,33 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     t_chk = '甲' if d['thien'] == can_tuan_scan else d['thien']
                     d_chk = '甲' if d['dia'] == can_tuan_scan else d['dia']
                     
+                    # 1. Lọc Cơ bản
                     if loc_thien_can and t_chk != loc_thien_can: return False, ""
                     if loc_dia_can and d_chk != loc_dia_can: return False, ""
                     if loc_mon and d['mon'] != loc_mon: return False, ""
                     if loc_than and d['than'] != loc_than: return False, ""
                     
+                    # 2. Lọc Cát Cách
                     if val_cat_cach:
                         clean_status_scan = [re.sub(r"<[^>]+>", "", item[0]) for item in cung_st_scan[p]]
                         if not any(val_cat_cach in clean_name for clean_name in clean_status_scan): return False, ""
                         
+                    # 3. LỌC THIÊN THỜI
                     if loc_thien_thoi == "Có":
                         if stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
                         
+                    # 4. LỌC NHÂN HÒA
+                    if loc_nhan_hoa == "Có":
+                        _, current_k_col = kigaku_data_scan[p]['stars']['d']
+                        if current_k_col == "#000000": return False, ""
+
+                    # 5. LỌC CÁT NHẬT
+                    if loai_ban == "时家" and loc_cat_nhat == "Có":
+                        if day_stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
+                        _, day_k_col = day_kigaku_scan[p]['stars']['d']
+                        if day_k_col == "#000000": return False, ""
+
+                    # 6. Lọc Trấn Hung / Thôi Cát
                     dung_cach = ""
                     if val_tran_hung or val_thoi_cat:
                         pa1_reqs, pa2_reqs = TRAN_HUNG_DICT[val_tran_hung] if val_tran_hung else THOI_CAT_DICT[val_thoi_cat]
