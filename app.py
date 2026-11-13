@@ -559,7 +559,7 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
                 wudun_html = ""
                 liuyao_html = ""
                 if loai_ban == "时家" and tdn_data:
-                    final_ss, final_liu_yao_html, _, _ = tdn_data
+                    final_ss, final_liu_yao_html, _, _, _ = tdn_data
                     
                     liuyao_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.6; font-weight: bold;'>{final_liu_yao_html}</div>"
 
