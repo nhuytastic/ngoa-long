@@ -158,9 +158,9 @@ def get_custom_lunar_day_data(solar_date):
     
     return l_month, l_day, is_leap, can, chi, dun_type, star, wl_jieqi, wl_yuan
 
-# ================= LOGIC NGŨ ĐỘN =================
+# ================= LOGIC NGŨ ĐỘN & LỤC DIỆU =================
 def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
-    # 1. TÍNH NGŨ ĐỘN ĐẠO GIA
+    # 1. TÍNH NGŨ ĐỘN
     ss_base_ch = ['贵人', '印财', '退财', '五鬼', '阳虎', '阴虎']
     hour_num = chi_gio_idx + 1
     base_month = (lunar_month - 2) % 6
@@ -180,64 +180,34 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx):
         elif ss == '阴虎' and can_transform: final_ss.append('副官')
         else: final_ss.append(ss)
         
-    # Chấm điểm Ngũ Độn
     ss_set = set(final_ss)
     wd_status, wd_color = "XẤU", "#000000"
     
-    if '退财' in ss_set: # Có Thoái Tài
+    if '退财' in ss_set: 
         if '贵人' in ss_set and '五鬼' not in ss_set: 
             wd_status, wd_color = "BÌNH", "#B8860B"
-            
-    elif '印财' not in ss_set and '贵人' not in ss_set: # Thiếu cả Ấn và Quý
+    elif '印财' not in ss_set and '贵人' not in ss_set: 
         wd_status, wd_color = "XẤU", "#000000"
-        
     else:
         is_tot = False
-        
-        # 1. Combo Ngũ Quỷ Vận Tài
-        if '五鬼' in ss_set and '印财' in ss_set:
-            is_tot = True 
-            
-        # 2. Combo liên quan đến Quan
+        if '五鬼' in ss_set and '印财' in ss_set: is_tot = True 
         has_quan = '正官' in ss_set or '副官' in ss_set
-        if has_quan:
-            if '印财' in ss_set: # Quan + Ấn (Tự lực) hoặc Quan + Ấn + Quý (Quý Nhân giúp)
-                is_tot = True
-                
-        # 3. Combo Bình An Tài Lộc
-        if not has_quan and '五鬼' not in ss_set and '贵人' in ss_set and '印财' in ss_set:
-            is_tot = True
-            
-        if is_tot:
-            wd_status, wd_color = "TỐT", "#CC0000"
+        if has_quan and '印财' in ss_set: is_tot = True
+        if not has_quan and '五鬼' not in ss_set and '贵人' in ss_set and '印财' in ss_set: is_tot = True
+        if is_tot: wd_status, wd_color = "TỐT", "#CC0000"
 
-    # 2. TÍNH TAM THẦN TỨ TƯỚNG
-    month_starts = {1: 1, 2: 0, 3: 11, 4: 10, 5: 9, 6: 10, 7: 11, 8: 0, 9: 1, 10: 2, 11: 3, 12: 2}
-    base_cung = month_starts[lunar_month]
-    cung_thang = (base_cung + lunar_month - 1) % 12
-    cung_ngay = (cung_thang + lunar_day - 1) % 12
-    cung_gio = (cung_ngay + hour_num - 1) % 12
-    thien_cuong = (cung_gio - 1) % 12
+    # 2. TÍNH LỤC DIỆU
+    # Danh sách 6 sao Lục Diệu
+    liu_yao_names = ['大安', '留连', '速喜', '赤口', '小吉', '空亡']
     
-    gen_names = ['天罡', '太乙', '胜光', '小吉', '传送', '从魁', '河魁', '登明', '神后', '大吉', '功曹', '太冲']
-
-    tc_eval = {
-        '登明': {0: ("TỐT", "#CC0000"), 6: ("TỐT", "#CC0000"), 3: ("XẤU", "#000000"), 9: ("XẤU", "#000000")},
-        '神后': {0: ("BÌNH", "#B8860B"), 6: ("XẤU", "#000000"), 3: ("TỐT", "#CC0000"), 9: ("XẤU", "#000000")},
-        '大吉': {0: ("BÌNH", "#B8860B"), 6: ("TỐT", "#CC0000"), 3: ("TỐT", "#CC0000"), 9: ("XẤU", "#000000")}
-    }
+    # Công thức Module 6: (Tháng + Ngày + Giờ_Index - 3) % 6
+    # chi_gio_idx trong code truyền vào đếm từ 0 (Tý=0, Sửu=1...). Nên Giờ_Index chuẩn = chi_gio_idx + 1
+    ly_index = (lunar_month + lunar_day + (chi_gio_idx + 1) - 3) % 6
     
-    gen_dict = {}
-    tc_status = "XẤU"
-    for i, name in enumerate(gen_names):
-        pos = (thien_cuong + i) % 12
-        color = "#999999"
-        if name in tc_eval and pos in [0, 3, 6, 9]:
-            status, color = tc_eval[name][pos]
-            if status in ["TỐT", "BÌNH"]: tc_status = status
-        gen_dict[pos] = (name, color)
+    final_liu_yao = liu_yao_names[ly_index]
         
-    return final_ss, wd_status, wd_color, gen_dict, tc_status
+    # Hàm trả về: Ngũ Độn, Trạng thái, Màu Ngũ Độn, Lục Diệu
+    return final_ss, wd_status, wd_color, final_liu_yao
 
 # ==========================================
 # 3. LẬP BÀN TOÁN HỌC 
@@ -553,10 +523,18 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
 
             if p == 5:
                 wudun_html = ""
+                liuyao_html = ""
                 if loai_ban == "时家" and tdn_data:
-                    final_ss, _, wd_color, _, _ = tdn_data
+                    final_ss, _, wd_color, final_liu_yao = tdn_data
+                    
+                    # Ngũ Độn (Góc trên bên phải)
                     wudun_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color:{wd_color}; font-size: {f_form}; text-align: center; line-height: 1.15; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
-                html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{wudun_html}</td>'
+                    
+                    # Lục Diệu (Góc dưới bên phải)
+                    ly_vert = "<br>".join(list(final_liu_yao))
+                    liuyao_html = f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; color: #999999; font-size: {f_form}; text-align: center; line-height: 1.15; font-weight: bold;'>{ly_vert}</div>"
+                
+                html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{wudun_html}{liuyao_html}</td>'
             else:
                 godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
                 form_html = "".join([f"<div class='formation-item' style='color:{f_color};'>{f_name}</div>" for f_name, f_color in cung_status[p]])
