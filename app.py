@@ -773,10 +773,12 @@ with st.container():
     loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "Có"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "Có"])
     loc_cat_cach = c13.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
+
     options_luc_dieu = ["", "大安", "留连", "速喜", "赤口", "小吉", "空亡"] if loai_ban == "时家" else [""]
     options_cat_nhat = ["", "Có"] if loai_ban == "时家" else [""]
-    loc_luc_dieu = c14.selectbox("六曜 (Lục Diệu)", options=options_luc_dieu, disabled=(loai_ban=="日家"))
-    loc_cat_nhat = c15.selectbox("吉日 (Cát Nhật)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
+    
+    loc_luc_dieu = c14.selectbox("小六壬 (Lục Diệu)", options=options_luc_dieu, disabled=(loai_ban=="日家"))
+    loc_cat_nhat = c15.selectbox("吉日 (Cát Nhật)", options=options_cat_nhat, disabled=(loai_ban=="日家"))
 
 def find_fulfilled_plan(plan_list, d_cung, status_cung, can_tuan_scan):
     clean_status = [re.sub(r"<[^>]+>", "", item[0]) for item in status_cung]
