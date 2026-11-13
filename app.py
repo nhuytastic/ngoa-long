@@ -977,8 +977,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     
                     day_board_html = ""
                     if loai_ban == "时家":
-                        day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
-                        day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
+                        day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else wl_ju_s
+                        day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, wl_ju_s)
                         day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
                         
                         day_cung_st_scan, day_stem_colors, day_mon_colors, day_than_colors = qimen_analyzer_hojo(day_scan_data, day_can_tuan, day_p_land)
@@ -1017,14 +1017,14 @@ if st.button("TÌM KIẾM", use_container_width=True):
                             day_cach_cuc_html = " ➔ " + ", ".join(list_html)
                             
                         day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
-                        
                         day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> Ngày {can_ngay_scan}{chi_ngay_scan} | {day_stems_html} | <span style='color:{d_than_col}; font-weight:bold;'>{d_than}</span> - <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{day_cach_cuc_html}{kigaku_day_html}"
 
-                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html))
+                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html, ly_text_in_ra))
 
             if results:
                 st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html) in enumerate(results):
+                # Lôi biến ly_text_in_ra ra khỏi mảng
+                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html, ly_text_in_ra) in enumerate(results):
                     h_text = f" | Hướng: {cung_str}" if cung_str else ""
                     cach_text = f" | Dùng: **{d_cach}**" if d_cach else ""
                     
@@ -1037,9 +1037,10 @@ if st.button("TÌM KIẾM", use_container_width=True):
                             clean_name = re.sub(r"<[^>]+>", "", name)
                             list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
                         cach_cuc_html = " ➔ " + ", ".join(list_html)
-
-                    ly_html = f" | <span style='color:#666666; font-weight:bold;'>{ly_text_in_ra}</span>" if ly_text_in_ra else ""   
-                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{than_mon_html}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
+                        
+                    ly_html = f" | <span style='color:#666666; font-weight:bold;'>{ly_text_in_ra}</span>" if ly_text_in_ra else ""
+                    
+                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{than_mon_html}{cach_text}{cach_cuc_html}{ly_html}{kigaku_html}", unsafe_allow_html=True)
                     if day_board_html:
                         st.markdown(day_board_html, unsafe_allow_html=True)
                     st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
