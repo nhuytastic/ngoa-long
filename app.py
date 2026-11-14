@@ -196,16 +196,10 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx, is_leap=False):
     if '退财' in ss_set: 
         if '贵人' in ss_set and '五鬼' not in ss_set: wd_status = "平"
     else:
-        if '五鬼' in ss_set and '贵人' in ss_set and count_qui_nhan >= count_ngu_quy:
+        if '印财' in ss_set:
+            wd_status = "吉"
+        elif '五鬼' in ss_set and '贵人' in ss_set and count_qui_nhan >= count_ngu_quy:
             wd_status = "平"
-            
-        is_tot = False
-        if '五鬼' in ss_set and '印财' in ss_set: is_tot = True 
-        has_quan = '正官' in ss_set or '副官' in ss_set
-        if has_quan and '印财' in ss_set: is_tot = True
-        if not has_quan and '五鬼' not in ss_set and '贵人' in ss_set and '印财' in ss_set: is_tot = True
-        
-        if is_tot: wd_status = "吉"
 
     # 2. TÍNH LỤC DIỆU
     calc_month = lunar_month
@@ -874,7 +868,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     
                     if loc_gio and chi_gio_scan != loc_gio: continue
                     if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
-                    if loc_ngu_don and wd_status != loc_ngu_don: continue
+                    if loc_ngu_don == "吉" and wd_status != "吉": continue
+                    if loc_ngu_don == "平" and wd_status not in ("吉", "平"): continue
                         
                     can_gio_scan = get_wushu_dun(can_ngay_scan, chi_gio_scan)
                     wl_ju_s = calculate_correct_ju(wl_yuan_s, can_gio_scan, chi_gio_scan, wl_jieqi_s, huong_son)
