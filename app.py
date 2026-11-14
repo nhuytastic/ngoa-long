@@ -798,15 +798,15 @@ with st.container():
     _, c9, c10, c11, c12, c13, c14, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 1, 0.1])
     loc_tran_hung = c9.selectbox("鎮凶 (Trấn Hung)", options=tran_hung_list)
     loc_thoi_cat = c10.selectbox("催吉 (Thôi Cát)", options=thoi_cat_list)
-    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "Có"])
-    loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "Có"])
+    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "干-神-门"])
+    loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "吉"])
     
-    options_thoi = ["", "Có"] if loai_ban == "时家" else [""]
+    options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
     options_luc_dieu = ["", "大安", "留连", "速喜", "赤口", "小吉", "空亡"] if loai_ban == "时家" else [""]
     options_ngu_don = ["", "吉", "平"] if loai_ban == "时家" else [""] 
     
     loc_cat_nhat = c13.selectbox("吉日 (Cát Nhật)", options=options_thoi, disabled=(loai_ban=="日家"))
-    loc_luc_dieu = c14.selectbox("小六壬 (Lục Diệu)", options=options_luc_dieu, disabled=(loai_ban=="日家"))
+    loc_luc_dieu = c14.selectbox("六曜 (Lục Diệu)", options=options_luc_dieu, disabled=(loai_ban=="日家"))
     loc_ngu_don = c15.selectbox("五遁 (Ngũ Độn)", options=options_ngu_don, disabled=(loai_ban=="日家"))
 
 import re 
@@ -847,25 +847,18 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 ly_text_in_ra = ""
                 gio_ly = ""
                 wd_status = ""
+                wd_text_in_ra = ""
                 
                 if loai_ban == "日家":
                     current_scan_dt += timedelta(days=1)
-                    s_date = current_scan_dt.date()
-                    s_obj = sxtwl.fromSolar(s_date.year, s_date.month, s_date.day)
+                    s_date = current_scan_dt.date() + timedelta(days=1) if current_scan_dt.hour >= 23 else current_scan_dt.date()
+                    _, _, _, can_ngay_scan, chi_ngay_scan, wl_dun_s, day_star_s, _, wl_yuan_s = get_custom_lunar_day_data(s_date)
                     
-                    gz_scan = s_obj.getDayGZ()
-                    can_ngay_scan = thien_can[gz_scan.tg]
-                    chi_ngay_scan = dia_chi[gz_scan.dz]
-                    
-                    wl_dun_s, wl_ju_s, _ = calculate_exact_daily_ju(current_scan_dt, s_date, selected_tz)
-                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_ju_s, wl_ju_s)
+                    wl_ju_s = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
+                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_ju_s, day_star_s)
                     can_tuan_scan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
-                    cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
                     
-                    cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
-                    kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, chi_ngay_scan, "日家")
-                    
-                    time_str = f"{current_scan_dt.strftime('%d/%m/%Y')}"
+                    time_str = f"{s_date.strftime('%d/%m/%Y')}"
                     c_str = f"{wl_dun_s} {wl_ju_s}局 | Ngày {can_ngay_scan}{chi_ngay_scan}"
                     
                 else:
@@ -876,7 +869,8 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
                     chi_gio_scan = dia_chi[chi_gio_idx]
                     
-                    _, _, gio_ly, ly_text_in_ra, wd_status = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
+                    final_ss_scan, _, gio_ly, ly_text_in_ra, wd_status = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
+                    wd_text_in_ra = " ".join(final_ss_scan)
                     
                     if loc_gio and chi_gio_scan != loc_gio: continue
                     if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
@@ -902,12 +896,14 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 # 1. LẬP NHẬT BÀN NGẦM (Chỉ chạy khi có yêu cầu lọc Cát Nhật)
                 # ========================================================
                 day_stem_colors_scan = {}
+                day_mon_colors_scan = {}
+                day_than_colors_scan = {}
                 day_kigaku_scan = {}
-                if loai_ban == "时家" and loc_cat_nhat == "Có":
+                if loai_ban == "时家" and loc_cat_nhat == "吉":
                     day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
                     day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
                     day_can_tuan_leader = get_xun_leader(can_ngay_scan, chi_ngay_scan)
-                    _, day_stem_colors_scan, _, _ = qimen_analyzer_hojo(day_scan_data, day_can_tuan_leader, day_p_land)
+                    _, day_stem_colors_scan, day_mon_colors_scan, day_than_colors_scan = qimen_analyzer_hojo(day_scan_data, day_can_tuan_leader, day_p_land)
                     
                     day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
                     
@@ -933,17 +929,21 @@ if st.button("TÌM KIẾM", use_container_width=True):
                         if not any(val_cat_cach in clean_name for clean_name in clean_status_scan): return False, ""
                         
                     # 3. LỌC THIÊN THỜI
-                    if loc_thien_thoi == "Có":
+                    if loc_thien_thoi == "天地干":
                         if stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
+                    elif loc_thien_thoi == "干-神-门":
+                        if stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
+                        if than_colors_scan.get(p, "#000000") == "#000000" and mon_colors_scan.get(p, "#000000") == "#000000": return False, ""
                         
                     # 4. LỌC NHÂN HÒA
-                    if loc_nhan_hoa == "Có":
+                    if loc_nhan_hoa == "吉":
                         _, current_k_col = kigaku_data_scan[p]['stars']['d']
                         if current_k_col == "#000000": return False, ""
 
                     # 5. LỌC CÁT NHẬT
-                    if loai_ban == "时家" and loc_cat_nhat == "Có":
+                    if loai_ban == "时家" and loc_cat_nhat == "吉":
                         if day_stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
+                        if day_than_colors_scan.get(p, "#000000") == "#000000" and day_mon_colors_scan.get(p, "#000000") == "#000000": return False, ""
                         _, day_k_col = day_kigaku_scan[p]['stars']['d']
                         if day_k_col == "#000000": return False, ""
 
@@ -980,6 +980,10 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     res_mon = scan_data[target_palace]['mon']
                     res_than_col = than_colors_scan.get(target_palace, "#999999")
                     res_mon_col = mon_colors_scan.get(target_palace, "#999999")
+                    res_thien = scan_data[target_palace]['thien']
+                    res_dia = scan_data[target_palace]['dia']
+                    res_stem_col = stem_colors_scan.get(target_palace, "#000000")
+                    res_stems_html = f"<span style='color:{res_stem_col}; font-weight:bold;'>{res_thien}</span>/<span style='color:{res_stem_col}; font-weight:bold;'>{res_dia}</span>"
                     
                     d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                     raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
@@ -1036,13 +1040,13 @@ if st.button("TÌM KIẾM", use_container_width=True):
                             day_cach_cuc_html = " ➔ " + ", ".join(list_html)
                             
                         day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
-                        day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> Ngày {can_ngay_scan}{chi_ngay_scan} | {day_stems_html} | <span style='color:{d_than_col}; font-weight:bold;'>{d_than}</span> - <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{day_cach_cuc_html}{kigaku_day_html}"
+                        day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_than_col}; font-weight:bold;'>{d_than}</span> - <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{day_cach_cuc_html}{kigaku_day_html}"
 
-                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html, ly_text_in_ra))
+                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html, ly_text_in_ra, res_stems_html, wd_text_in_ra))
 
             if results:
                 st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html, ly_text_in_ra) in enumerate(results):
+                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html, ly_text_in_ra, stems_html, wd_text_in_ra) in enumerate(results):
                     h_text = f" | Hướng: {cung_str}" if cung_str else ""
                     cach_text = f" | Dùng: **{d_cach}**" if d_cach else ""
                     
@@ -1057,8 +1061,12 @@ if st.button("TÌM KIẾM", use_container_width=True):
                         cach_cuc_html = " ➔ " + ", ".join(list_html)
                         
                     ly_html = f" | <span style='color:#666666; font-weight:bold;'>{ly_text_in_ra}</span>" if ly_text_in_ra else ""
+                    wd_html = f" | <span style='color:#666666; font-weight:bold;'>{wd_text_in_ra}</span>" if wd_text_in_ra else ""
                     
-                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text}{than_mon_html}{cach_text}{cach_cuc_html}{ly_html}{kigaku_html}", unsafe_allow_html=True)
+                    if loai_ban == "时家":
+                        st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{than_mon_html}{cach_text}{cach_cuc_html}{kigaku_html}{ly_html}{wd_html}", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text} | {stems_html}{than_mon_html}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
                     if day_board_html:
                         st.markdown(day_board_html, unsafe_allow_html=True)
                     st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
