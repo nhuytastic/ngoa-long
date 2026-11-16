@@ -358,7 +358,7 @@ def render_html_table(cung_data, hex_data, stem_colors, mon_colors, can_tuan, ki
     luoi_lac_thu = [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
     
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "5.5cqw"       
+    f_can = "5.8cqw"       
     f_k_star = "4.5cqw"    
     f_form = "2.4cqw"  
         
