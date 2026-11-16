@@ -26,62 +26,6 @@ DEITIES = ["值符", "螣蛇", "太阴", "六合", "勾陈", "朱雀", "九地",
 
 wolong_jq_order = ["大雪", "冬至", "小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪"]
 
-GATE_TO_TRIGRAM = {"休门": "地", "生门": "雷", "伤门": "火", "杜门": "泽", "景门": "天", "死门": "风", "惊门": "水", "开门": "山"}
-TIEN_THIEN_MAP = {9: "天", 1: "地", 3: "火", 7: "水", 6: "山", 2: "风", 8: "雷", 4: "泽"}
-
-TRIGRAM_BIN = {"地": [0,0,0], "山": [0,0,1], "水": [0,1,0], "风": [0,1,1], "雷": [1,0,0], "火": [1,0,1], "泽": [1,1,0], "天": [1,1,1]}
-BIN_TO_TRIGRAM = {tuple(v): k for k, v in TRIGRAM_BIN.items()}
-TRIGRAM_UNICODE = {"天": "☰", "泽": "☱", "火": "☲", "雷": "☳", "风": "☴", "水": "☵", "山": "☶", "地": "☷"}
-
-EVAL_DICT = {
-    "风": {"泽":"〇", "天":"△", "风":"✕", "火":"〇", "水":"△", "雷":"〇", "地":"✕", "山":"〇"},
-    "天": {"泽":"✕", "天":"△", "风":"✕", "火":"〇", "水":"✕", "雷":"△", "地":"✕", "山":"✕"},
-    "水": {"泽":"✕", "天":"✕", "风":"✕", "火":"〇", "水":"✕", "雷":"✕", "地":"〇", "山":"✕"},
-    "泽": {"泽":"△", "天":"✕", "风":"✕", "火":"✕", "水":"✕", "雷":"✕", "地":"〇", "山":"〇"},
-    "山": {"泽":"△", "天":"〇", "风":"✕", "火":"✕", "水":"✕", "雷":"〇", "地":"✕", "山":"✕"},
-    "火": {"泽":"✕", "天":"〇", "风":"〇", "火":"✕", "水":"✕", "雷":"△", "地":"〇", "山":"✕"},
-    "地": {"泽":"〇", "天":"〇", "风":"〇", "火":"✕", "水":"✕", "雷":"〇", "地":"△", "山":"△"},
-    "雷": {"泽":"✕", "天":"△", "风":"〇", "火":"〇", "水":"〇", "雷":"△", "地":"〇", "山":"✕"}
-}
-
-HEX_NAME_DICT = {
-    ("天","天"): "Càn", ("地","地"): "Khôn", ("水","雷"): "Truân", ("山","水"): "Mông",
-    ("水","天"): "Nhu", ("天","水"): "Tụng", ("地","水"): "Sư", ("水","地"): "Tỷ",
-    ("风","天"): "Tiểu Súc", ("天","泽"): "Lý", ("地","天"): "Thái", ("天","地"): "Bĩ",
-    ("天","火"): "Đồng Nhân", ("火","天"): "Đại Hữu", ("地","山"): "Khiêm", ("雷","地"): "Dự",
-    ("泽","雷"): "Tùy", ("山","风"): "Cổ", ("地","泽"): "Lâm", ("风","地"): "Quan",
-    ("火","雷"): "Phệ Hạp", ("山","火"): "Bí", ("山","地"): "Bác", ("地","雷"): "Phục",
-    ("天","雷"): "Vô Vọng", ("山","天"): "Đại Súc", ("山","雷"): "Di", ("泽","风"): "Đại Quá",
-    ("水","水"): "Khảm", ("火","火"): "Ly", ("泽","山"): "Hàm", ("雷","风"): "Hằng",
-    ("天","山"): "Độn", ("雷","天"): "Đại Tráng", ("火","地"): "Tấn", ("地","火"): "Minh Di",
-    ("风","火"): "Gia Nhân", ("火","泽"): "Khuê", ("水","山"): "Kiển", ("雷","水"): "Giải",
-    ("山","泽"): "Tổn", ("风","雷"): "Ích", ("泽","天"): "Quải", ("天","风"): "Cấu",
-    ("泽","地"): "Tụy", ("地","风"): "Thăng", ("泽","水"): "Khốn", ("水","风"): "Tỉnh",
-    ("泽","火"): "Cách", ("火","风"): "Đỉnh", ("雷","雷"): "Chấn", ("山","山"): "Cấn",
-    ("风","山"): "Tiệm", ("雷","泽"): "Quy Muội", ("雷","火"): "Phong", ("火","山"): "Lữ",
-    ("风","风"): "Tốn", ("泽","泽"): "Đoài", ("风","水"): "Hoán", ("水","泽"): "Tiết",
-    ("风","泽"): "Trung Phu", ("雷","山"): "Tiểu Quá", ("水","火"): "Ký Tế", ("火","水"): "Vị Tế"
-}
-
-HEX_CHINESE_DICT = {
-    ("天","天"): (1, "乾"), ("地","地"): (2, "坤"), ("水","雷"): (3, "屯"), ("山","水"): (4, "蒙"),
-    ("水","天"): (5, "需"), ("天","水"): (6, "訟"), ("地","水"): (7, "師"), ("水","地"): (8, "比"),
-    ("风","天"): (9, "小畜"), ("天","泽"): (10, "履"), ("地","天"): (11, "泰"), ("天","地"): (12, "否"),
-    ("天","火"): (13, "同人"), ("火","天"): (14, "大有"), ("地","山"): (15, "謙"), ("雷","地"): (16, "豫"),
-    ("泽","雷"): (17, "隨"), ("山","风"): (18, "蠱"), ("地","泽"): (19, "臨"), ("风","地"): (20, "觀"),
-    ("火","雷"): (21, "噬嗑"), ("山","火"): (22, "賁"), ("山","地"): (23, "剝"), ("地","雷"): (24, "復"),
-    ("天","雷"): (25, "無妄"), ("山","天"): (26, "大畜"), ("山","雷"): (27, "頤"), ("泽","风"): (28, "大過"),
-    ("水","水"): (29, "坎"), ("火","火"): (30, "離"), ("泽","山"): (31, "咸"), ("雷","风"): (32, "恆"),
-    ("天","山"): (33, "遯"), ("雷","天"): (34, "大壯"), ("火","地"): (35, "晉"), ("地","火"): (36, "明夷"),
-    ("风","火"): (37, "家人"), ("火","泽"): (38, "睽"), ("水","山"): (39, "蹇"), ("雷","水"): (40, "解"),
-    ("山","泽"): (41, "損"), ("风","雷"): (42, "益"), ("泽","天"): (43, "夬"), ("天","风"): (44, "姤"),
-    ("泽","地"): (45, "萃"), ("地","风"): (46, "升"), ("泽","水"): (47, "困"), ("水","风"): (48, "井"),
-    ("泽","火"): (49, "革"), ("火","风"): (50, "鼎"), ("雷","雷"): (51, "震"), ("山","山"): (52, "艮"),
-    ("风","山"): (53, "漸"), ("雷","泽"): (54, "歸妹"), ("雷","火"): (55, "豐"), ("火","山"): (56, "旅"),
-    ("风","风"): (57, "巽"), ("泽","泽"): (58, "兌"), ("风","水"): (59, "渙"), ("水","泽"): (60, "節"),
-    ("风","泽"): (61, "中孚"), ("雷","山"): (62, "小過"), ("水","火"): (63, "既濟"), ("火","水"): (64, "未濟")
-}
-
 KIGAKU_OPPOSITE = {1: 9, 2: 8, 3: 7, 4: 6, 6: 4, 7: 3, 8: 2, 9: 1, 5: 5}
 KIGAKU_HOME = {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9}
 KIGAKU_COMPATIBILITY = {
@@ -103,33 +47,20 @@ def get_hour_nine_star(day_branch, hour_branch, dun_type):
     res = (start_star + hb_idx) % 9 if dun_type == "阳遁" else (start_star - hb_idx) % 9
     return 9 if res == 0 else res
 
-def calculate_correct_ju(nguyen, can_gio, chi_gio, tiet_khi, mode="立向"):
+def calculate_correct_ju(nguyen, can_gio, chi_gio, tiet_khi):
     base_ju_dict = {"夏至":9,"小暑":7,"大暑":6,"立秋":5,"处暑":6,"白露":5,"秋分":4,"寒露":9,"霜降":8,"立冬":7,"小雪":2,"大雪":1,"冬至":1,"小寒":3,"大寒":4,"立春":5,"雨水":4,"惊蛰":5,"春分":6,"清明":1,"谷雨":2,"立夏":3,"小满":8,"芒种":9}
     yin_dun_terms = ["夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪"]
     dun_type = -1 if tiet_khi in yin_dun_terms else 1
     tuan_index = ((thien_can.index(can_gio) - dia_chi.index(chi_gio)) % 12) // 2
-    if mode == "坐山": tuan_index = 0 # Tọa Sơn Thời Bàn không xét tuần thủ
     nguyen_multiplier = 0 if nguyen == "上" else 1 if nguyen == "中" else 2
     raw_ju = base_ju_dict[tiet_khi] + (dun_type * (tuan_index + 6 * nguyen_multiplier))
     return (raw_ju - 1) % 9 + 1
-
-def calculate_daily_toason_ju(can_ngay, chi_ngay, dun_type, nguyen):
-    # Thuật toán Tọa Sơn Nhật Bàn (Dựa trên bảng 60 Hoa Giáp)
-    tuan_head = get_xun_leader(can_ngay, chi_ngay)
-    xun_list = ["戊", "己", "庚", "辛", "壬", "癸"] 
-    try: xun_idx = xun_list.index(tuan_head)
-    except: xun_idx = 0
-    group_idx = xun_idx // 2 # 0: Nhóm 1, 1: Nhóm 2, 2: Nhóm 3
-    yuan_mult = 0 if nguyen == "上" else 1 if nguyen == "中" else 2
-    if dun_type == "阳遁": res = 1 + group_idx + (3 * yuan_mult)
-    else: res = 9 - group_idx - (3 * yuan_mult)
-    return (res - 1) % 9 + 1
 
 def get_wushu_dun(day_stem, hour_branch):
     return thien_can[((thien_can.index(day_stem) % 5) * 2 + dia_chi.index(hour_branch)) % 10]
 
 def get_custom_lunar_day_data(solar_date):
-    """ THUẬT TOÁN ĐỘC QUYỀN 360 NGÀY ÂM LỊCH TÍNH CẢ TIẾT KHÍ """
+    """ 360 NGÀY ÂM LỊCH TÍNH CẢ TIẾT KHÍ """
     day_obj = sxtwl.fromSolar(solar_date.year, solar_date.month, solar_date.day)
     l_month = day_obj.getLunarMonth()
     l_day = day_obj.getLunarDay()
@@ -339,11 +270,6 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
 # 4. MODULE PHÂN TÍCH CÁCH CỤC
 # ==========================================
 def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
-    FORMATION_RANKS = {
-        "天遁": 1, "地遁": 1, "人遁": 1, "神遁": 1, "鬼遁": 1, "大格": 1, "小格": 1, "刑格": 1, "戦格": 1, "飛宮格": 1, "伏宮格": 1, "青竜逃走": 1, "白虎猖狂": 1, "熒惑入白": 1, "太白入熒": 1, "朱雀投江": 1, "螣蛇妖嬌": 1,
-        "青竜返首": 2, "飛鳥跌穴": 2, "玉女守門": 2, "乙奇得使": 2, "丙奇得使": 2, "丁奇得使": 2, "竜遁": 2, "虎遁": 2, "風遁": 2, "雲遁": 2, "乙奇入墓": 2, "丙奇入墓": 2, "丁奇入墓": 2, "干伏吟": 2, "干反吟": 2, 
-        "乙奇昇殿": 3, "丙奇昇殿": 3, "丁奇昇殿": 3, "星門伏吟": 3, "星門反吟": 3, "八門受制": 3, "六儀撃刑": 3
-    }
     cung_status = {i: [] for i in range(1, 10)}
     can_can_data = {'甲':{'甲':'吉','乙':'凶','丙':'吉','丁':'吉','戊':'凶','己':'吉','庚':'大凶','辛':'凶','壬':'凶','癸':'吉'}, '乙':{'甲':'吉','乙':'凶','丙':'吉','丁':'吉','戊':'吉','己':'吉','庚':'凶','辛':'大凶','壬':'吉','癸':'凶'}, '丙':{'甲':'吉','乙':'吉','丙':'凶','丁':'吉','戊':'吉','己':'吉','庚':'大凶','辛':'吉','壬':'吉','癸':'凶'}, '丁':{'甲':'吉','乙':'吉','丙':'吉','丁':'吉','戊':'吉','己':'凶','庚':'吉','辛':'凶','壬':'吉','癸':'大凶'}, '戊':{'甲':'凶','乙':'吉','丙':'吉','丁':'吉','戊':'凶','己':'凶','庚':'凶','辛':'凶','壬':'吉','癸':'凶'}, '己':{'甲':'凶','乙':'吉','丙':'凶','丁':'凶','戊':'吉','己':'凶','庚':'凶','辛':'凶','壬':'凶','癸':'凶'}, '庚':{'甲':'大凶','乙':'凶','丙':'大凶','丁':'吉','戊':'凶','己':'大凶','庚':'大凶','辛':'凶','壬':'大凶','癸':'大凶'}, '辛':{'甲':'凶','乙':'大凶','丙':'凶','丁':'吉','戊':'凶','己':'凶','庚':'凶','辛':'凶','壬':'凶','癸':'凶'}, '壬':{'甲':'凶','乙':'凶','丙':'凶','丁':'吉','戊':'吉','己':'凶','庚':'凶','辛':'吉','壬':'凶','癸':'凶'}, '癸':{'甲':'吉','乙':'凶','丙':'吉','丁':'大凶','戊':'吉','己':'凶','庚':'大凶','辛':'凶','壬':'凶','癸':'凶'}}
 
@@ -357,7 +283,7 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         t_can, d_can = get_actual(raw_t), get_actual(raw_d)
         mon, sao, than = d['mon'], d['sao'], d['than']
 
-        if t_can == '甲' and d_can == '丙': cung_status[p].append(("青竜返首", "#CC0000"))
+        if t_can == '甲' and d_can == '丙': cung_status[p].append(("青龙返首", "#CC0000"))
         if t_can == '丙' and d_can == '甲': cung_status[p].append(("飛鳥跌穴", "#CC0000"))
         if t_can == '丁' and p == p_land: cung_status[p].append(("玉女守門", "#CC0000"))
         if t_can == '乙' and p == 3: cung_status[p].append(("乙奇昇殿", "#CC0000"))
@@ -372,7 +298,7 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         if t_can == '丁' and mon == "休门" and than == "太阴": cung_status[p].append(("人遁", "#CC0000"))
         if t_can == '丙' and mon == "生门" and than == "九天": cung_status[p].append(("神遁", "#CC0000"))
         if t_can == '丁' and mon == "开门" and than == "九地": cung_status[p].append(("鬼遁", "#CC0000"))
-        if (t_can == '乙' and mon == "开门") or (t_can == '乙' and p == 6 and mon in ["休门", "生门"]): cung_status[p].append(("竜遁", "#CC0000"))
+        if (t_can == '乙' and mon == "开门") or (t_can == '乙' and p == 6 and mon in ["休门", "生门"]): cung_status[p].append(("龙遁", "#CC0000"))
         if (t_can == '乙' and mon == "生门") or (t_can == '乙' and p == 8 and mon in ["休门", "开门"]): cung_status[p].append(("虎遁", "#CC0000"))
         if t_can == '乙' and p == 4 and mon in ["休门", "生门", "开门"]: cung_status[p].append(("風遁", "#CC0000"))
         if t_can == '乙' and p == 2 and mon in ["休门", "生门", "开门"]: cung_status[p].append(("雲遁", "#CC0000"))
@@ -385,10 +311,10 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         if t_can == '庚' and d_can == '癸': cung_status[p].append(("大格", "#000000"))
         if t_can == '庚' and d_can == '壬': cung_status[p].append(("小格", "#000000"))
         if t_can == '庚' and d_can == '己': cung_status[p].append(("刑格", "#000000"))
-        if t_can == '庚' and d_can == '庚': cung_status[p].append(("戦格", "#000000"))
+        if t_can == '庚' and d_can == '庚': cung_status[p].append(("戰格", "#000000"))
         if t_can == '庚' and d_can == '甲': cung_status[p].append(("伏宮格", "#000000"))
         if t_can == '甲' and d_can == '庚': cung_status[p].append(("飛宮格", "#000000"))
-        if t_can == '乙' and d_can == '辛': cung_status[p].append(("青竜逃走", "#000000"))
+        if t_can == '乙' and d_can == '辛': cung_status[p].append(("青龙逃走", "#000000"))
         if t_can == '辛' and d_can == '乙': cung_status[p].append(("白虎猖狂", "#000000"))
         if t_can == '丙' and d_can == '庚': cung_status[p].append(("熒惑入白", "#000000"))
         if t_can == '庚' and d_can == '丙': cung_status[p].append(("太白入熒", "#000000"))
@@ -429,30 +355,20 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         else: than_colors[p] = "#000000"
 
     for p in cung_status:
-        cung_status[p].sort(key=lambda x: FORMATION_RANKS.get(x[0], 99))
         formatted_list = []
         for raw_name, color in cung_status[p]:
-            rank = FORMATION_RANKS.get(raw_name)
-            if rank == 3: continue 
             vert_text = "<br>".join(list(raw_name))
-            if rank: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}<div style='font-size: 0.9em; font-weight: normal; color: #666; margin-top: 3px;'>({rank})</div></div>"
-            else: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}</div>"
+            display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}</div>"
             formatted_list.append((display_name, color))
         cung_status[p] = formatted_list
 
     return cung_status, stem_colors, mon_colors, than_colors
 
 def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="日家"):
-    k_data = {i: {'d_forms': [], 'stars': {}} for i in range(1, 10)}
+    k_data = {i: {'stars': {}, 'honmei': False} for i in range(1, 10)}
     
     cung_ngu_hoang_d = [p for p, s in current_stars.items() if s == 5][0]
     cung_ban_menh_d = [p for p, s in current_stars.items() if s == birth_star][0]
-    
-    breaker_name = "日破" if mode == "日家" else "时破"
-    
-    def vert(text, color):
-        chars = "<br>".join(list(text))
-        return f"<div style='color:{color}; text-align:center; line-height: 1.15;'>{chars}</div>"
     
     for p in range(1, 10):
         s_val = current_stars[p]
@@ -460,19 +376,15 @@ def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="
         
         if p != 5: 
             if p == cung_ban_menh_d: 
-                k_data[p]['d_forms'].append(vert("本命殺", "#000000"))
+                k_data[p]['honmei'] = True
                 is_bad = True
             if cung_ban_menh_d != 5 and p == KIGAKU_OPPOSITE[cung_ban_menh_d]: 
-                k_data[p]['d_forms'].append(vert("的殺", "#000000"))
                 is_bad = True
             if p == cung_ngu_hoang_d: 
-                k_data[p]['d_forms'].append(vert("五黄殺", "#000000"))
                 is_bad = True
             if cung_ngu_hoang_d != 5 and p == KIGAKU_OPPOSITE[cung_ngu_hoang_d]: 
-                k_data[p]['d_forms'].append(vert("暗剣殺", "#000000"))
                 is_bad = True
             if p == KIGAKU_OPPOSITE[BRANCH_TO_PALACE[breaker_branch]]: 
-                k_data[p]['d_forms'].append(vert(breaker_name, "#000000"))
                 is_bad = True  
 
         if s_val == 5 or is_bad:
@@ -504,19 +416,16 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
         .qmdj-table {{ border-collapse: collapse; width: {tbl_w}; height: {tbl_h}; table-layout: fixed; background: #fff; z-index: 2; }}
         .qmdj-td {{ border: 1px solid #aaa; width: 33.33%; position: relative; vertical-align: top; padding: 1.5cqw; }}
         
-        /* CĂN LỀ PHẢI ĐỒNG BỘ CHO CÁCH CỤC (right: 1.5cqw) */
         .top-right-panel {{ position: absolute; top: 1cqw; right: 1.5cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
         .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: {f_form};}}
         
         .bottom-left-stems {{ position: absolute; bottom: 1.5cqw; left: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
         
-        /* LỀ PHẢI CỦA THẦN/MÔN ĐÃ LÀ 1.5cqw */
         .bottom-right-godgate {{ position: absolute; bottom: 1.5cqw; right: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; font-size: {f_can}; font-weight: bold; line-height: 1; }}
         
         .kigaku-col {{ position: absolute; top: 1cqw; left: 1cqw; display: flex; flex-direction: column; }}
         .k-row {{ display: flex; flex-direction: row; align-items: flex-start; gap: 1cqw;}}
         
-        /* ÉP KHÍ HỌC DÙNG CỠ CHỮ CHUẨN CỦA CÁCH CỤC */
         .k-star {{ font-size: {f_k_star}; font-weight: bold; width: 3cqw; text-align: center; line-height: 1;}}
         .k-forms {{ display: flex; flex-direction: row; gap: 0.5cqw; font-weight: bold; font-size: {f_form};}}
     </style>
@@ -546,7 +455,8 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
             mon_col = mon_colors.get(p, "#000000")
 
             ds_val, ds_col = k_d['stars']['d']
-            kigaku_html = f'<div class="kigaku-col"><div class="k-row"><div class="k-star" style="color:{ds_col};">{ds_val}</div><div class="k-forms">{"".join(k_d["d_forms"])}</div></div></div>'
+            ds_decor = "underline" if k_d.get('honmei') else "none"
+            kigaku_html = f'<div class="kigaku-col"><div class="k-row"><div class="k-star" style="color:{ds_col}; text-decoration:{ds_decor}; text-decoration-color:#000000; text-underline-offset:3px; text-decoration-thickness:2px;">{ds_val}</div></div></div>'
             stems_html = f'<div class="bottom-left-stems"><div style="{t_style}">{t_can}</div><div style="{d_style}">{d_can}</div></div>'
 
             if p == 5:
@@ -574,18 +484,16 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
 def get_current_vn_time(): return datetime.now(timezone(timedelta(hours=7)))
 if "init_dt" not in st.session_state: st.session_state.init_dt = get_current_vn_time()
 
-col1, col2, col3, col4, col5, col6, col7, col8, col9 = st.columns([1, 0.7, 0.7, 1, 0.7, 0.7, 0.8, 0.8, 0.8])
+col1, col2, col3, col4, col5, col6, col7, col8 = st.columns([1, 0.7, 0.7, 1, 0.7, 0.7, 0.8, 0.8])
 
 with col1: selected_date = st.date_input("Ngày Xem", value=st.session_state.init_dt.date(), min_value=date(1901, 1, 1), max_value=date(2100, 12, 31))
 with col2: selected_hour = st.selectbox("Giờ Xem", options=list(range(24)), index=st.session_state.init_dt.hour)
 with col3: selected_minute = st.selectbox("Phút Xem", options=list(range(60)), index=st.session_state.init_dt.minute)
-
 with col4: birth_date = st.date_input("Ngày Sinh", value=date(1993, 1, 7), min_value=date(1901, 1, 1), max_value=date(2100, 12, 31))
 with col5: birth_hour = st.selectbox("Giờ Sinh", options=list(range(24)), index=8)
 with col6: birth_minute = st.selectbox("Phút Sinh", options=list(range(60)), index=15)
 with col7: selected_tz = st.selectbox("Múi Giờ", options=list(range(-12, 15)), index=19, format_func=lambda x: f"UTC{'+' if x>=0 else ''}{x}")
 with col8: loai_ban = st.selectbox("Loại Bàn", options=["日家", "时家"], index=1)
-with col9: huong_son = st.selectbox("Hướng - Sơn", options=["立向", "坐山"], index=0)
 
 # --- TÍNH TOÁN SAO BẢN MỆNH LINH HOẠT THEO LOẠI BÀN ---
 # 1. Lấy thông tin Lịch của Ngày Sinh
@@ -598,7 +506,7 @@ b_chi_gio = dia_chi[b_chi_gio_idx]
 # 3. Tính Sao Giờ Sinh (Theo đúng công thức Thời Bàn)
 b_hour_star = get_hour_nine_star(b_chi_ngay, b_chi_gio, b_dun)
 
-# 4. Gán Sao Bản Mệnh linh hoạt
+# 4. Gán Sao Bản Mệnh
 user_birth_star = b_day_star if loai_ban == "日家" else b_hour_star
 
 hoa_giap_60 = [thien_can[i%10] + dia_chi[i%12] for i in range(60)]
@@ -627,15 +535,14 @@ if loai_ban == "日家":
     wl_can = can_ngay_str
     wl_chi = chi_ngay_str
     wl_dun = base_dun
-    if huong_son == "坐山": wl_ju = calculate_daily_toason_ju(wl_can, wl_chi, wl_dun, wl_yuan)
-    else: wl_ju = base_ju
+    wl_ju = base_ju
     actual_daily_star = base_ju
     is_nhuan_period = is_leap 
 else:
     wl_can = can_gio_str
     wl_chi = chi_gio_str
     wl_dun = base_dun
-    wl_ju = calculate_correct_ju(wl_yuan, wl_can, wl_chi, wl_jieqi, huong_son)
+    wl_ju = calculate_correct_ju(wl_yuan, wl_can, wl_chi, wl_jieqi)
     actual_daily_star = get_hour_nine_star(chi_ngay_str, wl_chi, wl_dun)
     is_nhuan_period = False
 
@@ -675,13 +582,6 @@ cung_day_stars = {p: data[p]['day_star'] for p in range(1, 10)}
 breaker_chi = wl_chi 
 kigaku_data = evaluate_kigaku_formations(user_birth_star, cung_day_stars, breaker_chi, loai_ban)
 
-# Lấy quẻ theo Phi Tinh Ngày
-global_lower_gate_final = data[cung_phi_tinh]['mon']
-global_lower_tri_final = GATE_TO_TRIGRAM.get(global_lower_gate_final, "天")
-final_hex_data = {}
-for p in range(1, 10):
-    if p != 5: final_hex_data[p] = global_lower_tri_final
-
 # 7. LỤC DIỆU, NGŨ ĐỘN
 tdn_data = None
 if loai_ban == "时家":
@@ -703,77 +603,13 @@ st.components.v1.html(combined_html, height=540, scrolling=False)
 st.markdown("---")
 st.markdown("<h3 style='text-align: center; color: #333; font-family: sans-serif; margin-bottom: 20px;'>DỤNG SỰ</h3>", unsafe_allow_html=True)
 
-FORMATION_RANKS_LOCAL = {
-    "天遁": 1, "地遁": 1, "人遁": 1, "神遁": 1, "鬼遁": 1,
-    "大格": 1, "小格": 1, "刑格": 1, "戦格": 1, "飛宮格": 1, "伏宮格": 1, 
-    "青竜逃走": 1, "白虎猖狂": 1, "熒惑入白": 1, "太白入熒": 1, "朱雀投江": 1, "螣蛇妖嬌": 1,
-    "青竜返首": 2, "飛鳥跌穴": 2, "玉女守門": 2, "乙奇得使": 2, "丙奇得使": 2, "丁奇得使": 2, 
-    "竜遁": 2, "虎遁": 2, "風遁": 2, "雲遁": 2, 
-    "乙奇入墓": 2, "丙奇入墓": 2, "丁奇入墓": 2,
-    "干伏吟": 2, "干反吟": 2, 
-    "乙奇昇殿": 3, "丙奇昇殿": 3, "丁奇昇殿": 3,
-    "星門伏吟": 3, "星門反吟": 3, "八门受制": 3, "六儀撃刑": 3
-}
+huong_list = {"": None, "坎 (345 - 15)": 1, "艮 (15 - 75)": 8, "震 (75 - 105)": 3, "巽 (105 - 165)": 4, "離 (165 - 195)": 9, "坤 (195 - 255)": 2, "兌 (255 - 285)": 7, "乾 (285 - 345)": 6}
 
-def format_ui_list(raw_list):
-    valid_items = [x for x in raw_list if x != ""]
-    valid_items.sort(key=lambda x: (FORMATION_RANKS_LOCAL.get(x, 99), x))
-    res = [""]
-    for x in valid_items:
-        rank = FORMATION_RANKS_LOCAL.get(x)
-        if rank: res.append(f"({rank}) {x}")
-        else: res.append(x)
-    return res
-
-def extract_raw_name(ui_name):
-    if not ui_name: return ""
-    return ui_name.split(") ")[1] if ") " in ui_name else ui_name
-
-# Hiển thị Hướng dựa trên lựa chọn Lập Hướng (30/60 độ) hay Tọa Sơn (45 độ)
-if huong_son == "立向":
-    huong_list = {"": None, "坎 (345 - 15)": 1, "艮 (15 - 75)": 8, "震 (75 - 105)": 3, "巽 (105 - 165)": 4, "離 (165 - 195)": 9, "坤 (195 - 255)": 2, "兌 (255 - 285)": 7, "乾 (285 - 345)": 6}
-else:
-    huong_list = {"": None, "坎 (337.5 - 22.5)": 1, "艮 (22.5 - 67.5)": 8, "震 (67.5 - 112.5)": 3, "巽 (112.5 - 157.5)": 4, "離 (157.5 - 202.5)": 9, "坤 (202.5 - 247.5)": 2, "兌 (247.5 - 292.5)": 7, "乾 (292.5 - 337.5)": 6}
-
-can_list = ["", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
 can_list = ["", "甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"]
 mon_list = ["", "休门", "生门", "伤门", "杜门", "景门", "死门", "惊门", "开门"]
 tinh_list = ["", "天蓬", "天芮", "天冲", "天辅", "天禽", "天心", "天柱", "天任", "天英"]
 than_list = ["", "值符", "螣蛇", "太阴", "六合", "勾陈", "朱雀", "九地", "九天"]
-cat_cach_list = format_ui_list(["青竜返首", "飛鳥跌穴", "玉女守門", "乙奇昇殿", "丙奇昇殿", "丁奇昇殿", "天遁", "地遁", "人遁", "神遁", "鬼遁", "竜遁", "虎遁", "風遁", "雲遁"])
-
-TRAN_HUNG_DICT = {
-    "大格": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "小格": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "刑格": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "戦格": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "伏宮格": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "太白入熒": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "飛宮格": (["人遁", "鬼遁"], ["玉女守門", "天盤丙", "乙奇得使", "丁奇得使"]),
-    "青竜逃走": (["人遁", "鬼遁"], ["玉女守門", "天盤丙", "乙奇得使", "丁奇得使"]),
-    "白虎猖狂": (["天遁", "神遁"], ["飛鳥跌穴", "丙奇得使"]),
-    "螣蛇妖嬌": (["天遁", "地遁", "神遁"], ["飛鳥跌穴", "乙奇得使", "丙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "乙奇入墓": (["人遁", "鬼遁", "玉女守門", "丁奇得使"], ["丁奇昇殿"]),
-    "干伏吟": (["青竜返首"], []), "干反吟": (["青竜返首"], []),
-    "熒惑入白": ([], []), "朱雀投江": ([], []), "丙奇入墓": ([], []), "丁奇入墓": ([], [])
-}
-
-THOI_CAT_DICT = {
-    "青竜返首": (["青竜返首"], []), "乙奇得使": (["青竜返首"], []),
-    "地遁": (["青竜返首"], []), "竜遁": (["青竜返首"], []), "虎遁": (["青竜返首"], []),
-    "風遁": (["青竜返首"], []), "雲遁": (["青竜返首"], []),
-    "飛鳥跌穴": (["地遁", "乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"], ["乙奇昇殿"]),
-    "玉女守門": (["地遁", "青竜返首", "乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"], ["乙奇昇殿"]),
-    "丙奇得使": (["地遁", "乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"], ["乙奇昇殿"]),
-    "丁奇得使": (["地遁", "青竜返首", "乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"], ["乙奇昇殿"]),
-    "天遁": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "神遁": (["地遁"], ["乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "人遁": (["地遁"], ["青竜返首", "乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"]),
-    "鬼遁": (["地遁"], ["青竜返首", "乙奇得使", "竜遁", "虎遁", "風遁", "雲遁"])
-}
-
-tran_hung_list = format_ui_list(list(TRAN_HUNG_DICT.keys()))
-thoi_cat_list = format_ui_list(list(THOI_CAT_DICT.keys()))
+cat_cach_list = ["", "天遁", "地遁", "人遁", "神遁", "鬼遁", "青竜返首", "飛鳥跌穴", "玉女守門", "竜遁", "虎遁", "風遁", "雲遁", "乙奇昇殿", "丙奇昇殿", "丁奇昇殿"]
 
 with st.container():
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
@@ -788,11 +624,9 @@ with st.container():
     loc_than = c5.selectbox("八神 (Bát Thần)", options=than_list)
     loc_cat_cach = c6.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
     
-    # HÀNG 2: Trấn Hung -> Thôi Cát -> Thiên Thời -> Nhân Hòa -> Cát Nhật -> Lục Diệu -> Ngũ Độn
-    _, c9, c10, c11, c12, c13, c14, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 1, 0.1])
-    loc_tran_hung = c9.selectbox("鎮凶 (Trấn Hung)", options=tran_hung_list)
-    loc_thoi_cat = c10.selectbox("催吉 (Thôi Cát)", options=thoi_cat_list)
-    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "干-神-门"])
+    # HÀNG 2: Thiên Thời -> Nhân Hòa -> Cát Nhật -> Lục Diệu -> Ngũ Độn
+    _, c11, c12, c13, c14, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 0.1])
+    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "吉"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "吉"])
     
     options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
@@ -805,265 +639,222 @@ with st.container():
 
 import re 
 
-def find_fulfilled_plan(plan_list, d_cung, status_cung, can_tuan_scan):
-    clean_status = [re.sub(r"<[^>]+>", "", item[0]) for item in status_cung]
-    for req in plan_list:
-        if req == "天盤丙":
-            t_chk = '甲' if d_cung['thien'] == can_tuan_scan else d_cung['thien']
-            if t_chk == '丙': return "Thiên Bàn Bính"
-        else:
-            if any(req in clean_name for clean_name in clean_status): return req
-    return None
-
 if st.button("TÌM KIẾM", use_container_width=True):
-    val_tran_hung = extract_raw_name(loc_tran_hung)
-    val_thoi_cat = extract_raw_name(loc_thoi_cat)
-    
-    if val_tran_hung and val_thoi_cat:
-        st.error("Vui lòng không chọn cùng lúc Trấn Hung và Thôi Cát.")
-    else:
-        with st.spinner('Đang quét dữ liệu tương lai...'):
-            results = []
-            max_limit = 365 if loai_ban == "日家" else 1080 
+    with st.spinner('Đang quét dữ liệu tương lai...'):
+        results = []
+        max_limit = 365 if loai_ban == "日家" else 1080 
+        
+        if loai_ban == "时家":
+            if user_dt.hour % 2 == 0: current_scan_dt = (user_dt - timedelta(hours=1)).replace(minute=0, second=0)
+            else: current_scan_dt = user_dt.replace(minute=0, second=0)
+            current_scan_dt -= timedelta(hours=2) 
+        else:
+            current_scan_dt = datetime.combine(selected_date, time(selected_hour, selected_minute))
+        
+        loops = 0
+        while loops < max_limit: 
+            if len(results) >= 10: break 
             
-            if loai_ban == "时家":
-                if user_dt.hour % 2 == 0: current_scan_dt = (user_dt - timedelta(hours=1)).replace(minute=0, second=0)
-                else: current_scan_dt = user_dt.replace(minute=0, second=0)
-                current_scan_dt -= timedelta(hours=2) 
+            loops += 1
+            ly_text_in_ra = ""
+            gio_ly = ""
+            wd_status = ""
+            wd_text_in_ra = ""
+            
+            if loai_ban == "日家":
+                current_scan_dt += timedelta(days=1)
+                s_date = current_scan_dt.date() + timedelta(days=1) if current_scan_dt.hour >= 23 else current_scan_dt.date()
+                _, _, _, can_ngay_scan, chi_ngay_scan, wl_dun_s, day_star_s, _, wl_yuan_s = get_custom_lunar_day_data(s_date)
+                
+                wl_ju_s = day_star_s
+                scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_ju_s, day_star_s)
+                can_tuan_scan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
+                
+                time_str = f"{s_date.strftime('%d/%m/%Y')}"
+                c_str = f"{wl_dun_s} {wl_ju_s}局 | Ngày {can_ngay_scan}{chi_ngay_scan}"
+                
             else:
-                current_scan_dt = datetime.combine(selected_date, time(selected_hour, selected_minute))
-            
-            loops = 0
-            while loops < max_limit: 
-                if len(results) >= 10: break 
+                current_scan_dt += timedelta(hours=2) 
+                s_date = current_scan_dt.date() + timedelta(days=1) if current_scan_dt.hour >= 23 else current_scan_dt.date()
+                l_month_s, l_day_s, is_leap_s, can_ngay_scan, chi_ngay_scan, wl_dun_s, day_star_s, wl_jieqi_s, wl_yuan_s = get_custom_lunar_day_data(s_date)
                 
-                loops += 1
-                ly_text_in_ra = ""
-                gio_ly = ""
-                wd_status = ""
-                wd_text_in_ra = ""
+                chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
+                chi_gio_scan = dia_chi[chi_gio_idx]
                 
-                if loai_ban == "日家":
-                    current_scan_dt += timedelta(days=1)
-                    s_date = current_scan_dt.date() + timedelta(days=1) if current_scan_dt.hour >= 23 else current_scan_dt.date()
-                    _, _, _, can_ngay_scan, chi_ngay_scan, wl_dun_s, day_star_s, _, wl_yuan_s = get_custom_lunar_day_data(s_date)
+                final_ss_scan, _, gio_ly, ly_text_in_ra, wd_status = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
+                wd_text_in_ra = " ".join(final_ss_scan)
+                
+                if loc_gio and chi_gio_scan != loc_gio: continue
+                if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
+                if loc_ngu_don == "吉" and wd_status != "吉": continue
+                if loc_ngu_don == "平" and wd_status not in ("吉", "平"): continue
                     
-                    wl_ju_s = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
-                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_ju_s, day_star_s)
-                    can_tuan_scan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
-                    
-                    time_str = f"{s_date.strftime('%d/%m/%Y')}"
-                    c_str = f"{wl_dun_s} {wl_ju_s}局 | Ngày {can_ngay_scan}{chi_ngay_scan}"
-                    
-                else:
-                    current_scan_dt += timedelta(hours=2) 
-                    s_date = current_scan_dt.date() + timedelta(days=1) if current_scan_dt.hour >= 23 else current_scan_dt.date()
-                    l_month_s, l_day_s, is_leap_s, can_ngay_scan, chi_ngay_scan, wl_dun_s, day_star_s, wl_jieqi_s, wl_yuan_s = get_custom_lunar_day_data(s_date)
-                    
-                    chi_gio_idx = 0 if current_scan_dt.hour >= 23 else (current_scan_dt.hour + 1) // 2 % 12
-                    chi_gio_scan = dia_chi[chi_gio_idx]
-                    
-                    final_ss_scan, _, gio_ly, ly_text_in_ra, wd_status = get_tdn_data(l_month_s, l_day_s, chi_gio_idx, is_leap_s)
-                    wd_text_in_ra = " ".join(final_ss_scan)
-                    
-                    if loc_gio and chi_gio_scan != loc_gio: continue
-                    if loc_luc_dieu and gio_ly != loc_luc_dieu: continue
-                    if loc_ngu_don == "吉" and wd_status != "吉": continue
-                    if loc_ngu_don == "平" and wd_status not in ("吉", "平"): continue
-                        
-                    can_gio_scan = get_wushu_dun(can_ngay_scan, chi_gio_scan)
-                    wl_ju_s = calculate_correct_ju(wl_yuan_s, can_gio_scan, chi_gio_scan, wl_jieqi_s, huong_son)
-                    daily_star_scan = get_hour_nine_star(chi_ngay_scan, chi_gio_scan, wl_dun_s)
-                    
-                    scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_gio_scan, chi_gio_scan, wl_dun_s, wl_ju_s, daily_star_scan)
-                    can_tuan_scan = get_xun_leader(can_gio_scan, chi_gio_scan)
-                    
-                    time_str = f"{current_scan_dt.strftime('%d/%m/%Y')} {current_scan_dt.strftime('%H:%M')}"
-                    c_str = f"Ngày {can_ngay_scan}{chi_ngay_scan} {can_gio_scan}{chi_gio_scan}时 | {wl_dun_s}{wl_ju_s}局"
+                can_gio_scan = get_wushu_dun(can_ngay_scan, chi_gio_scan)
+                wl_ju_s = calculate_correct_ju(wl_yuan_s, can_gio_scan, chi_gio_scan, wl_jieqi_s)
+                daily_star_scan = get_hour_nine_star(chi_ngay_scan, chi_gio_scan, wl_dun_s)
+                
+                scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_gio_scan, chi_gio_scan, wl_dun_s, wl_ju_s, daily_star_scan)
+                can_tuan_scan = get_xun_leader(can_gio_scan, chi_gio_scan)
+                
+                time_str = f"{current_scan_dt.strftime('%d/%m/%Y')} {current_scan_dt.strftime('%H:%M')}"
+                c_str = f"Ngày {can_ngay_scan}{chi_ngay_scan} {can_gio_scan}{chi_gio_scan}时 | {wl_dun_s}{wl_ju_s}局"
 
-                cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
-                cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
-                breaker_chi_scan = chi_ngay_scan if loai_ban == "日家" else chi_gio_scan
-                kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, breaker_chi_scan, loai_ban)
-                val_cat_cach = extract_raw_name(loc_cat_cach)
+            cung_st_scan, stem_colors_scan, mon_colors_scan, than_colors_scan = qimen_analyzer_hojo(scan_data, can_tuan_scan, p_land_scan)
+            cung_day_stars_scan = {p: scan_data[p]['day_star'] for p in range(1, 10)}
+            breaker_chi_scan = chi_ngay_scan if loai_ban == "日家" else chi_gio_scan
+            kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, breaker_chi_scan, loai_ban)
+            val_cat_cach = loc_cat_cach
 
-                # ========================================================
-                # 1. LẬP NHẬT BÀN NGẦM (Chỉ chạy khi có yêu cầu lọc Cát Nhật)
-                # ========================================================
-                day_stem_colors_scan = {}
-                day_mon_colors_scan = {}
-                day_than_colors_scan = {}
-                day_kigaku_scan = {}
+            # ========================================================
+            # 1. LẬP NHẬT BÀN NGẦM (Chạy khi có yêu cầu lọc Cát Nhật)
+            # ========================================================
+            day_stem_colors_scan = {}
+            day_mon_colors_scan = {}
+            day_than_colors_scan = {}
+            day_kigaku_scan = {}
+            if loai_ban == "时家" and loc_cat_nhat == "吉":
+                day_wl_ju = day_star_s
+                day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
+                day_can_tuan_leader = get_xun_leader(can_ngay_scan, chi_ngay_scan)
+                _, day_stem_colors_scan, day_mon_colors_scan, day_than_colors_scan = qimen_analyzer_hojo(day_scan_data, day_can_tuan_leader, day_p_land)
+                
+                day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
+                
+                day_kigaku_scan = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
+            # ========================================================
+
+            target_palace = huong_list[loc_huong] 
+
+            def check_match(p):
+                d = scan_data[p]
+                t_chk = '甲' if d['thien'] == can_tuan_scan else d['thien']
+                d_chk = '甲' if d['dia'] == can_tuan_scan else d['dia']
+                
+                # 1. Lọc Cơ bản
+                if loc_thien_can and t_chk != loc_thien_can: return False
+                if loc_dia_can and d_chk != loc_dia_can: return False
+                if loc_mon and d['mon'] != loc_mon: return False
+                if loc_than and d['than'] != loc_than: return False
+                
+                # 2. Lọc Cát Cách
+                if val_cat_cach:
+                    clean_status_scan = [re.sub(r"<[^>]+>", "", item[0]) for item in cung_st_scan[p]]
+                    if not any(val_cat_cach in clean_name for clean_name in clean_status_scan): return False
+                    
+                # 3. LỌC THIÊN THỜI
+                if loc_thien_thoi == "天地干":
+                    if stem_colors_scan.get(p, "#000000") == "#000000": return False
+                elif loc_thien_thoi == "吉":
+                    if stem_colors_scan.get(p, "#000000") == "#000000": return False
+                    if than_colors_scan.get(p, "#000000") == "#000000" and mon_colors_scan.get(p, "#000000") == "#000000": return False
+                    
+                # 4. LỌC NHÂN HÒA
+                if loc_nhan_hoa == "吉":
+                    _, current_k_col = kigaku_data_scan[p]['stars']['d']
+                    if current_k_col == "#000000": return False
+
+                # 5. LỌC CÁT NHẬT
                 if loai_ban == "时家" and loc_cat_nhat == "吉":
-                    day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
+                    if day_stem_colors_scan.get(p, "#000000") == "#000000": return False
+                    if day_than_colors_scan.get(p, "#000000") == "#000000" and day_mon_colors_scan.get(p, "#000000") == "#000000": return False
+                    _, day_k_col = day_kigaku_scan[p]['stars']['d']
+                    if day_k_col == "#000000": return False
+
+                return True
+
+            is_match = False
+            
+            if target_palace:
+                if target_palace != 5: 
+                    is_match = check_match(target_palace)
+            else:
+                for p in range(1, 10):
+                    if p == 5: continue
+                    is_match = check_match(p)
+                    if is_match:
+                        target_palace = p
+                        break
+                        
+            if is_match:
+                ten_cung = [k for k, v in huong_list.items() if v == target_palace][0]
+                cach_cuc_cua_cung = cung_st_scan[target_palace]
+                
+                res_than = scan_data[target_palace]['than']
+                res_mon = scan_data[target_palace]['mon']
+                res_than_col = than_colors_scan.get(target_palace, "#999999")
+                res_mon_col = mon_colors_scan.get(target_palace, "#999999")
+                res_thien = scan_data[target_palace]['thien']
+                res_dia = scan_data[target_palace]['dia']
+                res_stem_col = stem_colors_scan.get(target_palace, "#000000")
+                res_stems_html = f"<span style='color:{res_stem_col}; font-weight:bold;'>{res_thien}</span>/<span style='color:{res_stem_col}; font-weight:bold;'>{res_dia}</span>"
+                
+                d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
+                d_decor = "underline" if kigaku_data_scan[target_palace].get('honmei') else "none"
+                d_style = f"color:{d_star_col}; font-weight:bold; font-size:16px; text-decoration:{d_decor}; text-decoration-color:#000000; text-underline-offset:2px; text-decoration-thickness:2px;"
+                kigaku_result_html = f" | Khí Học: <span style='{d_style}'>{d_star_val}</span>"
+                
+                day_board_html = ""
+                if loai_ban == "时家":
+                    day_wl_ju = day_star_s
                     day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
-                    day_can_tuan_leader = get_xun_leader(can_ngay_scan, chi_ngay_scan)
-                    _, day_stem_colors_scan, day_mon_colors_scan, day_than_colors_scan = qimen_analyzer_hojo(day_scan_data, day_can_tuan_leader, day_p_land)
+                    day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
+                    
+                    day_cung_st_scan, day_stem_colors, day_mon_colors, day_than_colors = qimen_analyzer_hojo(day_scan_data, day_can_tuan, day_p_land)
                     
                     day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
+                    day_kigaku = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
                     
-                    day_kigaku_scan = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
-                # ========================================================
-
-                target_palace = huong_list[loc_huong] 
-
-                def check_match(p):
-                    d = scan_data[p]
-                    t_chk = '甲' if d['thien'] == can_tuan_scan else d['thien']
-                    d_chk = '甲' if d['dia'] == can_tuan_scan else d['dia']
+                    d_than = day_scan_data[target_palace]['than']
+                    d_mon = day_scan_data[target_palace]['mon']
+                    d_thien = day_scan_data[target_palace]['thien']
+                    d_dia = day_scan_data[target_palace]['dia']
                     
-                    # 1. Lọc Cơ bản
-                    if loc_thien_can and t_chk != loc_thien_can: return False, ""
-                    if loc_dia_can and d_chk != loc_dia_can: return False, ""
-                    if loc_mon and d['mon'] != loc_mon: return False, ""
-                    if loc_than and d['than'] != loc_than: return False, ""
+                    d_than_col = day_than_colors.get(target_palace, "#999999")
+                    d_mon_col = day_mon_colors.get(target_palace, "#999999")
+                    d_stem_col = day_stem_colors.get(target_palace, "#000000")
                     
-                    # 2. Lọc Cát Cách
-                    if val_cat_cach:
-                        clean_status_scan = [re.sub(r"<[^>]+>", "", item[0]) for item in cung_st_scan[p]]
-                        if not any(val_cat_cach in clean_name for clean_name in clean_status_scan): return False, ""
-                        
-                    # 3. LỌC THIÊN THỜI
-                    if loc_thien_thoi == "天地干":
-                        if stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
-                    elif loc_thien_thoi == "干-神-门":
-                        if stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
-                        if than_colors_scan.get(p, "#000000") == "#000000" and mon_colors_scan.get(p, "#000000") == "#000000": return False, ""
-                        
-                    # 4. LỌC NHÂN HÒA
-                    if loc_nhan_hoa == "吉":
-                        _, current_k_col = kigaku_data_scan[p]['stars']['d']
-                        if current_k_col == "#000000": return False, ""
-
-                    # 5. LỌC CÁT NHẬT
-                    if loai_ban == "时家" and loc_cat_nhat == "吉":
-                        if day_stem_colors_scan.get(p, "#000000") == "#000000": return False, ""
-                        if day_than_colors_scan.get(p, "#000000") == "#000000" and day_mon_colors_scan.get(p, "#000000") == "#000000": return False, ""
-                        _, day_k_col = day_kigaku_scan[p]['stars']['d']
-                        if day_k_col == "#000000": return False, ""
-
-                    # 6. Lọc Trấn Hung / Thôi Cát
-                    dung_cach = ""
-                    if val_tran_hung or val_thoi_cat:
-                        pa1_reqs, pa2_reqs = TRAN_HUNG_DICT[val_tran_hung] if val_tran_hung else THOI_CAT_DICT[val_thoi_cat]
-                        f1 = find_fulfilled_plan(pa1_reqs, d, cung_st_scan[p], can_tuan_scan) if pa1_reqs else None
-                        f2 = find_fulfilled_plan(pa2_reqs, d, cung_st_scan[p], can_tuan_scan) if pa2_reqs else None
-                        if not f1 and not f2: return False, "" 
-                        dung_cach = f1 if f1 else f2 
-                        
-                    return True, dung_cach
-
-                is_match = False
-                matched_cach = ""
-                
-                if target_palace:
-                    if target_palace != 5: 
-                        is_match, matched_cach = check_match(target_palace)
-                else:
-                    for p in range(1, 10):
-                        if p == 5: continue
-                        is_match, matched_cach = check_match(p)
-                        if is_match:
-                            target_palace = p
-                            break
-                            
-                if is_match:
-                    ten_cung = [k for k, v in huong_list.items() if v == target_palace][0]
-                    cach_cuc_cua_cung = cung_st_scan[target_palace]
+                    d_star_val2, d_star_col2 = day_kigaku[target_palace]['stars']['d']
+                    d_decor2 = "underline" if day_kigaku[target_palace].get('honmei') else "none"
+                    d_style2 = f"color:{d_star_col2}; font-weight:bold; font-size:16px; text-decoration:{d_decor2}; text-decoration-color:#000000; text-underline-offset:2px; text-decoration-thickness:2px;"
+                    kigaku_day_html = f" | Khí Học: <span style='{d_style2}'>{d_star_val2}</span>"
                     
-                    res_than = scan_data[target_palace]['than']
-                    res_mon = scan_data[target_palace]['mon']
-                    res_than_col = than_colors_scan.get(target_palace, "#999999")
-                    res_mon_col = mon_colors_scan.get(target_palace, "#999999")
-                    res_thien = scan_data[target_palace]['thien']
-                    res_dia = scan_data[target_palace]['dia']
-                    res_stem_col = stem_colors_scan.get(target_palace, "#000000")
-                    res_stems_html = f"<span style='color:{res_stem_col}; font-weight:bold;'>{res_thien}</span>/<span style='color:{res_stem_col}; font-weight:bold;'>{res_dia}</span>"
-                    
-                    d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
-                    raw_d_forms = kigaku_data_scan[target_palace]['d_forms']
-                    flat_d_forms = []
-                    for form_html in raw_d_forms:
-                        color_match = re.search(r"color:(#[0-9a-fA-F]{6})", form_html)
-                        color = color_match.group(1) if color_match else "#000000"
-                        text = re.sub(r"<[^>]+>", "", form_html) 
-                        flat_d_forms.append(f"<span style='color:{color}; font-weight:bold;'>{text}</span>")
-                    
-                    d_style = f"color:{d_star_col}; font-weight:bold; font-size:16px;"
-                    kigaku_result_html = f" | Khí Học: <span style='{d_style}'>{d_star_val}</span>"
-                    if flat_d_forms: kigaku_result_html += " (" + ", ".join(flat_d_forms) + ")"
-                    
-                    day_board_html = ""
-                    if loai_ban == "时家":
-                        day_wl_ju = calculate_daily_toason_ju(can_ngay_scan, chi_ngay_scan, wl_dun_s, wl_yuan_s) if huong_son == "坐山" else day_star_s
-                        day_scan_data, day_can_tuan, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
-                        day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
-                        
-                        day_cung_st_scan, day_stem_colors, day_mon_colors, day_than_colors = qimen_analyzer_hojo(day_scan_data, day_can_tuan, day_p_land)
-                        
-                        day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
-                        day_kigaku = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
-                        
-                        d_than = day_scan_data[target_palace]['than']
-                        d_mon = day_scan_data[target_palace]['mon']
-                        d_thien = day_scan_data[target_palace]['thien']
-                        d_dia = day_scan_data[target_palace]['dia']
-                        
-                        d_than_col = day_than_colors.get(target_palace, "#999999")
-                        d_mon_col = day_mon_colors.get(target_palace, "#999999")
-                        d_stem_col = day_stem_colors.get(target_palace, "#000000")
-                        
-                        d_star_val2, d_star_col2 = day_kigaku[target_palace]['stars']['d']
-                        raw_d_forms2 = day_kigaku[target_palace]['d_forms']
-                        flat_d_forms2 = []
-                        for form_html in raw_d_forms2:
-                            color_match = re.search(r"color:(#[0-9a-fA-F]{6})", form_html)
-                            color = color_match.group(1) if color_match else "#000000"
-                            text = re.sub(r"<[^>]+>", "", form_html) 
-                            flat_d_forms2.append(f"<span style='color:{color}; font-weight:bold;'>{text}</span>")
-                        
-                        d_style2 = f"color:{d_star_col2}; font-weight:bold; font-size:16px;"
-                        kigaku_day_html = f" | Khí Học: <span style='{d_style2}'>{d_star_val2}</span>"
-                        if flat_d_forms2: kigaku_day_html += " (" + ", ".join(flat_d_forms2) + ")"
-                        
-                        day_cach_cuc_html = ""
-                        if day_cung_st_scan[target_palace]:
-                            list_html = []
-                            for name, color in day_cung_st_scan[target_palace]:
-                                clean_name = re.sub(r"<[^>]+>", "", name)
-                                list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
-                            day_cach_cuc_html = " ➔ " + ", ".join(list_html)
-                            
-                        day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
-                        day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_than_col}; font-weight:bold;'>{d_than}</span> - <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{day_cach_cuc_html}{kigaku_day_html}"
-
-                    results.append((time_str, c_str, ten_cung, matched_cach, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html, ly_text_in_ra, res_stems_html, wd_text_in_ra))
-
-            if results:
-                st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-                for idx, (t_str, canchi_str, cung_str, d_cach, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html, ly_text_in_ra, stems_html, wd_text_in_ra) in enumerate(results):
-                    h_text = f" | Hướng: {cung_str}" if cung_str else ""
-                    cach_text = f" | Dùng: **{d_cach}**" if d_cach else ""
-                    
-                    than_mon_html = f" | <span style='color:{t_col}; font-weight:bold;'>{t_name}</span> - <span style='color:{m_col}; font-weight:bold;'>{m_name}</span>"
-                    
-                    cach_cuc_html = ""
-                    if cach_cuc_cua_cung:
+                    day_cach_cuc_html = ""
+                    if day_cung_st_scan[target_palace]:
                         list_html = []
-                        for name, color in cach_cuc_cua_cung:
+                        for name, color in day_cung_st_scan[target_palace]:
                             clean_name = re.sub(r"<[^>]+>", "", name)
                             list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
-                        cach_cuc_html = " ➔ " + ", ".join(list_html)
+                        day_cach_cuc_html = " ➔ " + ", ".join(list_html)
                         
-                    ly_html = f" | <span style='color:#666666; font-weight:bold;'>{ly_text_in_ra}</span>" if ly_text_in_ra else ""
-                    wd_html = f" | <span style='color:#666666; font-weight:bold;'>{wd_text_in_ra}</span>" if wd_text_in_ra else ""
+                    day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
+                    day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_than_col}; font-weight:bold;'>{d_than}</span> - <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{day_cach_cuc_html}{kigaku_day_html}"
+
+                results.append((time_str, c_str, ten_cung, cach_cuc_cua_cung, kigaku_result_html, res_than, res_mon, res_than_col, res_mon_col, day_board_html, ly_text_in_ra, res_stems_html, wd_text_in_ra))
+
+        if results:
+            st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
+            for idx, (t_str, canchi_str, cung_str, cach_cuc_cua_cung, kigaku_html, t_name, m_name, t_col, m_col, day_board_html, ly_text_in_ra, stems_html, wd_text_in_ra) in enumerate(results):
+                h_text = f" | Hướng: {cung_str}" if cung_str else ""
+                
+                than_mon_html = f" | <span style='color:{t_col}; font-weight:bold;'>{t_name}</span> - <span style='color:{m_col}; font-weight:bold;'>{m_name}</span>"
+                
+                cach_cuc_html = ""
+                if cach_cuc_cua_cung:
+                    list_html = []
+                    for name, color in cach_cuc_cua_cung:
+                        clean_name = re.sub(r"<[^>]+>", "", name)
+                        list_html.append(f"<span style='color:{color}; font-weight:bold;'>{clean_name}</span>")
+                    cach_cuc_html = " ➔ " + ", ".join(list_html)
                     
-                    if loai_ban == "时家":
-                        st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{than_mon_html}{cach_text}{cach_cuc_html}{kigaku_html}{ly_html}{wd_html}", unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text} | {stems_html}{than_mon_html}{cach_text}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
-                    if day_board_html:
-                        st.markdown(day_board_html, unsafe_allow_html=True)
-                    st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
-            else:
-                st.warning("Không tìm thấy ngày nào thỏa mãn TẤT CẢ các điều kiện trong 1 năm tới.")
+                ly_html = f" | <span style='color:#666666; font-weight:bold;'>{ly_text_in_ra}</span>" if ly_text_in_ra else ""
+                wd_html = f" | <span style='color:#666666; font-weight:bold;'>{wd_text_in_ra}</span>" if wd_text_in_ra else ""
+                
+                if loai_ban == "时家":
+                    st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{than_mon_html}{cach_cuc_html}{kigaku_html}{ly_html}{wd_html}", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text} | {stems_html}{than_mon_html}{cach_cuc_html}{kigaku_html}", unsafe_allow_html=True)
+                if day_board_html:
+                    st.markdown(day_board_html, unsafe_allow_html=True)
+                st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
+        else:
+            st.warning("Không tìm thấy ngày nào thỏa mãn TẤT CẢ các điều kiện trong 1 năm tới.")
