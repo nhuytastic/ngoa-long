@@ -358,7 +358,7 @@ def render_html_table(cung_data, hex_data, stem_colors, mon_colors, can_tuan, ki
     luoi_lac_thu = [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
     
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "4.8cqw"       
+    f_can = "5.5cqw"       
     f_k_star = "4.5cqw"    
     f_form = "2.4cqw"  
         
@@ -371,13 +371,11 @@ def render_html_table(cung_data, hex_data, stem_colors, mon_colors, can_tuan, ki
         .qmdj-table {{ border-collapse: collapse; width: {tbl_w}; height: {tbl_h}; table-layout: fixed; background: #fff; z-index: 2; }}
         .qmdj-td {{ border: 1px solid #aaa; width: 33.33%; position: relative; vertical-align: top; padding: 1.5cqw; }}
         
-        /* GÓC PHẢI BÊN TRÊN: HIỂN THỊ TÊN QUẺ + SỐ QUẺ HÀNG DỌC */
         .top-right-panel {{ position: absolute; top: 1cqw; right: 1.5cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
-        .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: {f_form};}}
+        .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: 3.5cqw;}}
         
         .bottom-left-stems {{ position: absolute; bottom: 1.5cqw; left: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
         
-        /* GÓC PHẢI BÊN DƯỚI: CHỈ HIỂN THỊ BÁT MÔN */
         .bottom-right-godgate {{ position: absolute; bottom: 1.5cqw; right: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; font-size: {f_can}; font-weight: bold; line-height: 1; }}
         
         .kigaku-col {{ position: absolute; top: 1cqw; left: 1cqw; display: flex; flex-direction: column; }}
