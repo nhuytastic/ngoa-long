@@ -325,12 +325,6 @@ def qimen_analyzer_hojo(cung_data, can_tuan, p_land):
         if t_can == d_can and t_can not in ['甲', '丁']: cung_status[p].append(("干伏吟", "#000000"))
         if (t_can, d_can) in [('戊','辛'), ('辛','戊'), ('己','壬'), ('壬','己'), ('庚','癸'), ('癸','庚')]: cung_status[p].append(("干反吟", "#000000"))
 
-        sao_mon_goc = {"天蓬":"休门", "天芮":"死门", "天冲":"伤门", "天辅":"杜门", "天心":"开门", "天柱":"惊门", "天任":"生门", "天英":"景门"}
-        mon_doi_xung = {"休门":"景门", "死门":"生门", "伤门":"惊门", "杜门":"开门", "开门":"杜门", "惊门":"伤门", "生门":"死门", "景门":"休门"}
-        if sao in sao_mon_goc:
-            if mon == sao_mon_goc[sao]: cung_status[p].append(("星門伏吟", "#000000"))
-            elif mon == mon_doi_xung[sao_mon_goc[sao]]: cung_status[p].append(("星門反吟", "#000000"))
-
     # LOGIC MÀU ĐỎ/ĐEN CỦA THẦN - MÔN
     tinh_mon_cat = {"天蓬": ["生门", "开门"], "天芮": ["休门", "景门", "开门"], "天冲": ["休门", "生门", "景门", "开门"], "天辅": ["休门", "生门", "景门"], "天禽": [], "天心": ["休门", "生门", "景门", "开门"], "天柱": ["休门", "生门", "景门", "开门"], "天任": ["休门", "景门", "开门"], "天英": ["生门", "开门"]}
     than_cat_chung = ["值符", "太阴", "六合", "九地", "九天"]
@@ -471,7 +465,8 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
                     
                 html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{liuyao_html}{wudun_html}</td>'
             else:
-                godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
+                sao_km = d.get('sao', '')
+                godgate_html = f'<div class="bottom-right-godgate"><div style="color:{than_col};">{than_km}</div><div style="color:#666666;">{sao_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
                 form_html = "".join([f"<div class='formation-item' style='color:{f_color};'>{f_name}</div>" for f_name, f_color in cung_status[p]])
                 html += f'<td class="qmdj-td">{kigaku_html}<div class="top-right-panel">{form_html}</div>{stems_html}{godgate_html}</td>'
         html += "</tr>"
@@ -614,19 +609,19 @@ cat_cach_list = ["", "天遁", "地遁", "人遁", "神遁", "鬼遁", "青竜�
 with st.container():
     st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
     
-    # HÀNG 1: Hướng -> Giờ -> Thiên Bàn -> Địa Bàn -> Bát Môn -> Bát Thần -> Cát Cách
-    _, c1, c_gio, c2, c3, c4, c5, c6, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 1, 0.1])
+    # HÀNG 1: Hướng -> Giờ -> Thiên Bàn -> Địa Bàn -> Bát Môn -> Bát Thần
+    _, c1, c_gio, c2, c3, c4, c5, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 0.1])
     loc_huong = c1.selectbox("方向 (Hướng)", options=list(huong_list.keys()))
     loc_gio = c_gio.selectbox("时辰 (Giờ)", options=[""] + list(dia_chi), disabled=(loai_ban=="日家"))
     loc_thien_can = c2.selectbox("天盤 (Thiên Bàn)", options=can_list)
     loc_dia_can = c3.selectbox("地盤 (Địa Bàn)", options=can_list)
     loc_mon = c4.selectbox("八门 (Bát Môn)", options=mon_list)
     loc_than = c5.selectbox("八神 (Bát Thần)", options=than_list)
-    loc_cat_cach = c6.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
     
-    # HÀNG 2: Thiên Thời -> Nhân Hòa -> Cát Nhật -> Lục Diệu -> Ngũ Độn
-    _, c11, c12, c13, c14, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 0.1])
-    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "吉"])
+    # HÀNG 2: Cát Cách -> Thiên Thời -> Nhân Hòa -> Cát Nhật -> Lục Diệu -> Ngũ Độn
+    _, c6, c11, c12, c13, c14, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 0.1])
+    loc_cat_cach = c6.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
+    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "十干-神-门"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "吉"])
     
     options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
@@ -791,7 +786,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 d_star_val, d_star_col = kigaku_data_scan[target_palace]['stars']['d']
                 d_decor = "underline" if kigaku_data_scan[target_palace].get('honmei') else "none"
                 d_style = f"color:{d_star_col}; font-weight:bold; font-size:16px; text-decoration:{d_decor}; text-decoration-color:#000000; text-underline-offset:2px; text-decoration-thickness:2px;"
-                kigaku_result_html = f" | Khí Học: <span style='{d_style}'>{d_star_val}</span>"
+                kigaku_result_html = f" | Cửu Tinh: <span style='{d_style}'>{d_star_val}</span>"
                 
                 day_board_html = ""
                 if loai_ban == "时家":
@@ -816,7 +811,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     d_star_val2, d_star_col2 = day_kigaku[target_palace]['stars']['d']
                     d_decor2 = "underline" if day_kigaku[target_palace].get('honmei') else "none"
                     d_style2 = f"color:{d_star_col2}; font-weight:bold; font-size:16px; text-decoration:{d_decor2}; text-decoration-color:#000000; text-underline-offset:2px; text-decoration-thickness:2px;"
-                    kigaku_day_html = f" | Khí Học: <span style='{d_style2}'>{d_star_val2}</span>"
+                    kigaku_day_html = f" | Cửu Tinh: <span style='{d_style2}'>{d_star_val2}</span>"
                     
                     day_cach_cuc_html = ""
                     if day_cung_st_scan[target_palace]:
