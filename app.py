@@ -268,7 +268,7 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
     return cung_data, p_circle, cung_phi_tinh, p_land
 
 # ==========================================
-# 4. MODULE PHÂN TÍCH CAN - MÔN
+# 4. MODULE PHÂN TÍCH CAN - MÔN - QUẺ DỊCH
 # ==========================================
 def analyze_wolong_board(cung_data, can_tuan, cung_phi_tinh, dun_type):
     can_can_data = {
@@ -318,6 +318,38 @@ def analyze_wolong_board(cung_data, can_tuan, cung_phi_tinh, dun_type):
         }
 
     return stem_colors, mon_colors, hex_data
+
+def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="日家"):
+    k_data = {i: {'stars': {}, 'honmei': False} for i in range(1, 10)}
+    
+    cung_ngu_hoang_d = [p for p, s in current_stars.items() if s == 5][0]
+    cung_ban_menh_d = [p for p, s in current_stars.items() if s == birth_star][0]
+    
+    for p in range(1, 10):
+        s_val = current_stars[p]
+        is_bad = False
+        
+        if p != 5: 
+            if p == cung_ban_menh_d: 
+                k_data[p]['honmei'] = True
+                is_bad = True
+            if cung_ban_menh_d != 5 and p == KIGAKU_OPPOSITE[cung_ban_menh_d]: 
+                is_bad = True
+            if p == cung_ngu_hoang_d: 
+                is_bad = True
+            if cung_ngu_hoang_d != 5 and p == KIGAKU_OPPOSITE[cung_ngu_hoang_d]: 
+                is_bad = True
+            if p == KIGAKU_OPPOSITE[BRANCH_TO_PALACE[breaker_branch]]: 
+                is_bad = True  
+
+        if s_val == 5 or is_bad:
+            color = "#000000"
+        else:
+            color = "#CC0000"
+            
+        k_data[p]['stars']['d'] = (s_val, color) 
+            
+    return k_data
 
 # ==========================================
 # 5. GIAO DIỆN HTML RENDER
@@ -618,7 +650,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
             kigaku_data_scan = evaluate_kigaku_formations(user_birth_star, cung_day_stars_scan, breaker_chi_scan, loai_ban)
 
             # ========================================================
-            # 1. LẬP NHẬT BÀN NGẦM (Chỉ chạy khi có yêu cầu lọc Cát Nhật)
+            # 1. LẬP NHẬT BÀN NGẦM (Chạy khi có yêu cầu lọc Cát Nhật)
             # ========================================================
             day_stem_colors_scan = {}
             day_mon_colors_scan = {}
