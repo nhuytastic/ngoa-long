@@ -397,7 +397,7 @@ def render_html_table(cung_data, cung_status, stem_colors, mon_colors, than_colo
     luoi_lac_thu = [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
     
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "5.5cqw"       
+    f_can = "5.0cqw"       
     f_k_star = "4.5cqw"    
     f_form = "2.4cqw"  
         
@@ -621,7 +621,7 @@ with st.container():
     # HÀNG 2: Cát Cách -> Thiên Thời -> Nhân Hòa -> Cát Nhật -> Lục Diệu -> Ngũ Độn
     _, c6, c11, c12, c13, c14, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 1, 0.1])
     loc_cat_cach = c6.selectbox("吉格 (Cát Cách)", options=cat_cach_list)
-    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "十干-神-门"])
+    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "吉"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "吉"])
     
     options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
