@@ -397,7 +397,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
     luoi_lac_thu = [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
     
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "5.5cqw"       
+    f_can = "6.0cqw"       
     f_k_star = "4.5cqw"    
     f_form = "2.4cqw"  
         
@@ -459,7 +459,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                             f"<div class='top-right-panel'>"
                             f"<div class='formation-item' style='color:{center_hex['color']};'>"
                             f"<div style='text-align: center; line-height: 1.15;'>{vert_hex}"
-                            f"<div style='font-size: 0.9em; font-weight: normal; color: #666; margin-top: 3px;'>({center_hex['num']})</div>"
+                            f"<div style='font-size: 0.6em; font-weight: normal; color: #666; margin-top: 3px;'>({center_hex['num']})</div>"
                             f"</div></div></div>"
                         )
                     if tdn_data:
