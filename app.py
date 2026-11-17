@@ -425,7 +425,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
     luoi_lac_thu = [[4, 9, 2], [3, 5, 7], [8, 1, 6]]
     
     tbl_w, tbl_h = "100%", "100%"
-    f_can = "6.0cqw"       
+    f_can = "5.5cqw"       
     f_k_star = "4.5cqw"    
     f_form = "2.4cqw"  
         
@@ -499,7 +499,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                                 f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2cqw; line-height: 1;'>{num}</div>"
                                 f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2cqw; line-height: 1; white-space: nowrap;'>{name}</div>"
                                 f"</div>"
-                                f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 4.2cqw;'>{lines_html}</div>"
+                                f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 5.0cqw;'>{lines_html}</div>"
                                 f"</div>"
                             )
 
