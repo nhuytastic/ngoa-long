@@ -459,7 +459,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                             f"<div class='top-right-panel'>"
                             f"<div class='formation-item' style='color:{center_hex['color']};'>"
                             f"<div style='text-align: center; line-height: 1.15;'>{vert_hex}"
-                            f"<div style='font-size: 0.6em; font-weight: normal; color: #666; margin-top: 3px;'>({center_hex['num']})</div>"
+                            f"<div style='font-size: 0.8em; font-weight: normal; color: #666; margin-top: 3px;'>({center_hex['num']})</div>"
                             f"</div></div></div>"
                         )
                     if tdn_data:
