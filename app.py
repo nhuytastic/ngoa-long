@@ -515,7 +515,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                         final_block = build_hex_block(center_hex['final_bits'], center_hex['final_num'], center_hex['final_name'], center_hex['final_color'])
 
                         center_hex_html = (
-                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch; gap: 0.5cqw;'>"
+                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch; gap: 0.6cqw;'>"
                             f"{init_block}{arrow_html}{final_block}"
                             f"</div>"
                         )
@@ -640,7 +640,7 @@ cung_day_stars = {p: data[p]['day_star'] for p in range(1, 10)}
 breaker_chi = wl_chi 
 kigaku_data = evaluate_kigaku_formations(user_birth_star, cung_day_stars, breaker_chi, loai_ban)
 
-# 7. LỤC DIỆU, NGŨ ĐỘN (Vẫn tính toán, chỉ hiển thị Ngũ Độn ở Trung Cung)
+# 7. NGŨ ĐỘN, LỤC DIỆU
 tdn_data = None
 if loai_ban == "时家":
     tdn_data = get_tdn_data(l_month, l_day, chi_gio_idx, is_leap)
