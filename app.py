@@ -140,7 +140,7 @@ def get_menh_cung(b_day_star, b_hour_star):
     idx = (b_day_star - b_hour_star) % 9
     return WOLONG_FLYING_PATH[idx]
 
-# ================= LOGIC LỤC DIỆU & NGŨ ĐỘN =================
+# ================= LOGIC NGŨ ĐỘN & LỤC DIỆU =================
 
 def get_tdn_data(lunar_month, lunar_day, chi_gio_idx, is_leap=False):
     # 1. TÍNH NGŨ ĐỘN
@@ -337,7 +337,7 @@ def analyze_wolong_board(cung_data, can_tuan):
 
 def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour, sel_minute):
     """
-    Tính Quẻ Dịch cuối cùng ở Trung Cung cho Thời Bàn:
+    Tính Quẻ Đầu -> Quẻ Cuối ở Trung Cung cho Thời Bàn:
     - Thượng Quái: Bát Môn tại Mệnh Cung
     - Hạ Quái: Bát Môn tại vị trí Tuần Thủ Giáp trên Địa Bàn (p_circle)
     - Biến Hào: Chia 120 phút của canh giờ thành 6 khoảng 20 phút (Hào 1 -> Hào 6)
@@ -359,21 +359,31 @@ def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour, sel_minu
     minutes_in_branch = sel_minute if sel_hour % 2 == 1 else (60 + sel_minute)
     hao_idx = minutes_in_branch // 20  # 0..5 (Hào 1 -> Hào 6)
 
-    bits = list(TRIGRAM_TO_BITS[lower_tri] + TRIGRAM_TO_BITS[upper_tri])
-    bits[hao_idx] = 1 - bits[hao_idx]
+    init_bits = list(TRIGRAM_TO_BITS[lower_tri] + TRIGRAM_TO_BITS[upper_tri])
+    final_bits = list(init_bits)
+    final_bits[hao_idx] = 1 - final_bits[hao_idx]
 
-    final_lower_tri = BITS_TO_TRIGRAM[tuple(bits[:3])]
-    final_upper_tri = BITS_TO_TRIGRAM[tuple(bits[3:])]
+    final_lower_tri = BITS_TO_TRIGRAM[tuple(final_bits[:3])]
+    final_upper_tri = BITS_TO_TRIGRAM[tuple(final_bits[3:])]
 
-    hex_num, hex_name = HEX_CHINESE_DICT[(final_upper_tri, final_lower_tri)]
-    eval_sym = EVAL_DICT[final_upper_tri][final_lower_tri]
     eval_color_map = {"〇": "#CC0000", "△": "#D4AF37", "✕": "#000000"}
 
+    init_num, init_name = HEX_CHINESE_DICT[(upper_tri, lower_tri)]
+    init_eval = EVAL_DICT[upper_tri][lower_tri]
+
+    final_num, final_name = HEX_CHINESE_DICT[(final_upper_tri, final_lower_tri)]
+    final_eval = EVAL_DICT[final_upper_tri][final_lower_tri]
+
     return {
-        'num': hex_num,
-        'name': hex_name,
-        'eval': eval_sym,
-        'color': eval_color_map[eval_sym]
+        'init_bits': init_bits,
+        'init_num': init_num,
+        'init_name': init_name,
+        'init_color': eval_color_map[init_eval],
+        'final_bits': final_bits,
+        'final_num': final_num,
+        'final_name': final_name,
+        'final_color': eval_color_map[final_eval],
+        'hao_idx': hao_idx
     }
 
 def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="日家"):
@@ -471,20 +481,46 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                 wudun_html = ""
                 center_hex_html = ""
                 if loai_ban == "时家":
-                    if center_hex:
-                        vert_hex = "<br>".join(list(center_hex['name']))
-                        center_hex_html = (
-                            f"<div class='top-right-panel'>"
-                            f"<div class='formation-item' style='color:{center_hex['color']};'>"
-                            f"<div style='text-align: center; line-height: 1.15;'>{vert_hex}"
-                            f"<div style='font-size: 0.8em; font-weight: normal; color: #666; margin-top: 3px;'>({center_hex['num']})</div>"
-                            f"</div></div></div>"
-                        )
                     if tdn_data:
                         final_ss, _, _, _, _ = tdn_data
-                        wudun_html = f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.4; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
-                    
-                html += f'<td class="qmdj-td">{kigaku_html}{center_hex_html}{stems_html}{wudun_html}</td>'
+                        wudun_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.4; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
+
+                    if center_hex:
+                        def build_hex_block(bits, num, name, color):
+                            lines_html = ""
+                            for b in bits:  # 0..5 (Hào 1 dưới cùng -> Hào 6 trên cùng)
+                                if b == 1:
+                                    lines_html += f"<div style='flex: 1; display: flex; align-items: center; width: 100%;'><div style='width: 100%; height: 0.9cqw; background-color: {color};'></div></div>"
+                                else:
+                                    lines_html += f"<div style='flex: 1; display: flex; align-items: center; justify-content: space-between; width: 100%;'><div style='width: 42%; height: 0.9cqw; background-color: {color};'></div><div style='width: 42%; height: 0.9cqw; background-color: {color};'></div></div>"
+                            return (
+                                f"<div style='display: flex; flex-direction: row; align-items: stretch; height: 100%; gap: 0.4cqw;'>"
+                                f"<div style='display: flex; flex-direction: column; height: 100%; align-items: flex-end; color: {color}; font-weight: bold;'>"
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2cqw; line-height: 1;'>{num}</div>"
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2cqw; line-height: 1; white-space: nowrap;'>{name}</div>"
+                                f"</div>"
+                                f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 4.2cqw;'>{lines_html}</div>"
+                                f"</div>"
+                            )
+
+                        arrow_rows = ""
+                        for i in range(6):
+                            if i == center_hex['hao_idx']:
+                                arrow_rows += "<div style='flex: 1; display: flex; align-items: center; justify-content: center; color: #666666; font-size: 2cqw; font-weight: bold; line-height: 1;'>→</div>"
+                            else:
+                                arrow_rows += "<div style='flex: 1;'></div>"
+                        arrow_html = f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 2cqw;'>{arrow_rows}</div>"
+
+                        init_block = build_hex_block(center_hex['init_bits'], center_hex['init_num'], center_hex['init_name'], center_hex['init_color'])
+                        final_block = build_hex_block(center_hex['final_bits'], center_hex['final_num'], center_hex['final_name'], center_hex['final_color'])
+
+                        center_hex_html = (
+                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch; gap: 0.3cqw;'>"
+                            f"{init_block}{arrow_html}{final_block}"
+                            f"</div>"
+                        )
+
+                html += f'<td class="qmdj-td">{kigaku_html}{wudun_html}{stems_html}{center_hex_html}</td>'
             else:
                 than_km = d.get('than', '')
                 godgate_html = f'<div class="bottom-right-godgate"><div style="color:#666666;">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
