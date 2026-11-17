@@ -223,7 +223,7 @@ def get_tdn_data(lunar_month, lunar_day, chi_gio_idx, is_leap=False):
 # 3. LẬP BÀN TOÁN HỌC 
 # ==========================================
 def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
-    cung_data = {i: {'dia': '', 'mon': '', 'thien': '', 'day_star': ''} for i in range(1, 10)}
+    cung_data = {i: {'dia': '', 'mon': '', 'thien': '', 'sao': '', 'than': '', 'day_star': ''} for i in range(1, 10)}
     
     current_val = (10 - ju_num) if dun_type == "阳遁" else ju_num
     step_dir = 1 if dun_type == "阳遁" else -1
@@ -279,6 +279,24 @@ def lap_que_wolong(can_ngay, chi_ngay, dun_type, ju_num, daily_star):
     for cung in WOLONG_FLYING_PATH:
         cung_data[cung]['day_star'] = curr_star
         curr_star = 1 if curr_star == 9 else curr_star + 1
+
+    luoshu_9 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    idx_base_star = luoshu_9.index(p_circle)
+    idx_target_star = luoshu_9.index(p_day_stem)
+    shift_for_star = (idx_target_star - idx_base_star) % 9
+    for i in range(1, 10):
+        idx_new = (luoshu_9.index(i) + shift_for_star) % 9
+        cung_data[luoshu_9[idx_new]]['sao'] = ORIGINAL_STARS[i]
+    cung_data[5]['sao'] = ""
+
+    anchor_palace = p_day_stem
+    if anchor_palace == 5: anchor_palace = 8 if dun_type == "阳遁" else 7
+
+    idx_anchor = WOLONG_OUTER_PALACES.index(anchor_palace)
+    for i in range(8):
+        if dun_type == "阳遁": cung_data[WOLONG_OUTER_PALACES[(idx_anchor + i) % 8]]['than'] = DEITIES[i]
+        else: cung_data[WOLONG_OUTER_PALACES[(idx_anchor - i) % 8]]['than'] = DEITIES[i]
+    cung_data[5]['than'] = ""
 
     cung_phi_tinh = cung_data[5]['day_star']
     return cung_data, p_circle, cung_phi_tinh, p_land
@@ -468,7 +486,8 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                     
                 html += f'<td class="qmdj-td">{kigaku_html}{center_hex_html}{stems_html}{wudun_html}</td>'
             else:
-                godgate_html = f'<div class="bottom-right-godgate"><div style="color:{mon_col};">{mon_km}</div></div>'
+                than_km = d.get('than', '')
+                godgate_html = f'<div class="bottom-right-godgate"><div style="color:#666666;">{than_km}</div><div style="color:{mon_col};">{mon_km}</div></div>'
                 html += f'<td class="qmdj-td">{kigaku_html}{stems_html}{godgate_html}</td>'
         html += "</tr>"
     html += "</table></div></div>"
@@ -491,7 +510,7 @@ with col6: birth_minute = st.selectbox("Phút Sinh", options=list(range(60)), in
 with col7: selected_tz = st.selectbox("Múi Giờ", options=list(range(-12, 15)), index=19, format_func=lambda x: f"UTC{'+' if x>=0 else ''}{x}")
 with col8: loai_ban = st.selectbox("Loại Bàn", options=["日家", "时家"], index=1)
 
-# --- TÍNH TOÁN SAO BẢN MỆNH & MỆNH CUNG (ĐỒNG BỘ SAU 23H SANG NGÀY MỚI) ---
+# --- TÍNH TOÁN SAO BẢN MỆNH & MỆNH CUNG ---
 actual_birth_date = birth_date + timedelta(days=1) if birth_hour >= 23 else birth_date
 
 # 1. Lấy thông tin Lịch của Ngày Sinh
@@ -762,6 +781,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 
                 res_mon = scan_data[target_palace]['mon']
                 res_mon_col = mon_colors_scan.get(target_palace, "#000000")
+                res_than = scan_data[target_palace]['than']
                 res_thien = scan_data[target_palace]['thien']
                 res_dia = scan_data[target_palace]['dia']
                 res_stem_col = stem_colors_scan.get(target_palace, "#000000")
@@ -784,6 +804,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     day_kigaku = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
                     
                     d_mon = day_scan_data[target_palace]['mon']
+                    d_than = day_scan_data[target_palace]['than']
                     d_thien = day_scan_data[target_palace]['thien']
                     d_dia = day_scan_data[target_palace]['dia']
                     
@@ -796,21 +817,22 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     kigaku_day_html = f" | Cửu Tinh: <span style='{d_style2}'>{d_star_val2}</span>"
                     
                     day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
-                    day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span>{kigaku_day_html}"
+                    day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span> | <span style='color:#666666; font-weight:bold;'>{d_than}</span>{kigaku_day_html}"
 
-                results.append((time_str, c_str, ten_cung, kigaku_result_html, res_mon, res_mon_col, day_board_html, res_stems_html, wd_text_in_ra))
+                results.append((time_str, c_str, ten_cung, kigaku_result_html, res_mon, res_mon_col, res_than, day_board_html, res_stems_html, wd_text_in_ra))
 
         if results:
             st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-            for idx, (t_str, canchi_str, cung_str, kigaku_html, m_name, m_col, day_board_html, stems_html, wd_text_in_ra) in enumerate(results):
+            for idx, (t_str, canchi_str, cung_str, kigaku_html, m_name, m_col, t_than, day_board_html, stems_html, wd_text_in_ra) in enumerate(results):
                 h_text = f" | Hướng: {cung_str}" if cung_str else ""
                 mon_html = f" | <span style='color:{m_col}; font-weight:bold;'>{m_name}</span>"
+                than_html = f" | <span style='color:#666666; font-weight:bold;'>{t_than}</span>" if t_than else ""
                 wd_html = f" | <span style='color:#666666; font-weight:bold;'>{wd_text_in_ra}</span>" if wd_text_in_ra else ""
                 
                 if loai_ban == "时家":
-                    st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{mon_html}{kigaku_html}{wd_html}", unsafe_allow_html=True)
+                    st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{mon_html}{than_html}{kigaku_html}{wd_html}", unsafe_allow_html=True)
                 else:
-                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text} | {stems_html}{mon_html}{kigaku_html}", unsafe_allow_html=True)
+                    st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text} | {stems_html}{mon_html}{than_html}{kigaku_html}", unsafe_allow_html=True)
                 if day_board_html:
                     st.markdown(day_board_html, unsafe_allow_html=True)
                 st.markdown("<div style='height: 5px;'></div>", unsafe_allow_html=True)
