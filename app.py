@@ -515,7 +515,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                         final_block = build_hex_block(center_hex['final_bits'], center_hex['final_num'], center_hex['final_name'], center_hex['final_color'])
 
                         center_hex_html = (
-                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch; gap: 0.8cqw;'>"
+                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch; gap: 0.95cqw;'>"
                             f"{init_block}{arrow_html}{final_block}"
                             f"</div>"
                         )
