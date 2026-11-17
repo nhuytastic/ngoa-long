@@ -641,10 +641,11 @@ with st.container():
     loc_dia_can = c3.selectbox("地盤 (Địa Bàn)", options=can_list)
     loc_mon = c4.selectbox("八门 (Bát Môn)", options=mon_list)
     
-    # HÀNG 2: Thiên Thời -> Nhân Hòa -> Cát Nhật -> Ngũ Độn (Bỏ Lục Diệu)
-    _, c11, c12, c13, c15, _ = st.columns([0.1, 1, 1, 1, 1, 0.1])
-    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "天地干", "天地干 + 八门"])
+    # HÀNG 2: Thiên Thời -> Nhân Hòa -> Địa Lợi -> Cát Nhật -> Ngũ Độn
+    _, c11, c12, c_dialoi, c13, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 0.1])
+    loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "吉"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "吉"])
+    loc_dia_loi = c_dialoi.selectbox("地利 (Địa Lợi)", options=["", "吉"])
     
     options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
     options_ngu_don = ["", "吉", "平"] if loai_ban == "时家" else [""] 
@@ -743,18 +744,19 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 if loc_mon and d['mon'] != loc_mon: return False
                     
                 # 2. LỌC THIÊN THỜI
-                if loc_thien_thoi == "天地干":
+                if loc_thien_thoi == "吉":
                     if stem_colors_scan.get(p, "#000000") == "#000000": return False
-                elif loc_thien_thoi == "天地干 + 八门":
-                    if stem_colors_scan.get(p, "#000000") == "#000000": return False
-                    if mon_colors_scan.get(p, "#000000") == "#000000": return False
                     
                 # 3. LỌC NHÂN HÒA
                 if loc_nhan_hoa == "吉":
                     _, current_k_col = kigaku_data_scan[p]['stars']['d']
                     if current_k_col == "#000000": return False
 
-                # 4. LỌC CÁT NHẬT (Thiên Địa Can cát + Nhân Hòa cát + Bát Môn cát)
+                # 4. LỌC ĐỊA LỢI
+                if loc_dia_loi == "吉":
+                    if mon_colors_scan.get(p, "#000000") == "#000000": return False
+
+                # 5. LỌC CÁT NHẬT (Thiên Địa Can cát + Nhân Hòa cát + Bát Môn cát)
                 if loai_ban == "时家" and loc_cat_nhat == "吉":
                     if day_stem_colors_scan.get(p, "#000000") == "#000000": return False
                     if day_mon_colors_scan.get(p, "#000000") == "#000000": return False
