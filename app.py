@@ -489,7 +489,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                         init_block = build_hex_block(center_hex['init_bits'], center_hex['init_num'], center_hex['init_name'], center_hex['init_color'])
 
                         center_hex_html = (
-                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.7cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch;'>"
+                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.8cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch;'>"
                             f"{init_block}"
                             f"</div>"
                         )
