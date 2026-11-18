@@ -491,7 +491,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
     
     tbl_w, tbl_h = "100%", "100%"
     f_can = "5.5cqw"       
-    f_k_star = "4.5cqw"    
+    f_k_star = "5.0cqw"    
     f_form = "2.4cqw"  
         
     html = f"""
@@ -561,8 +561,8 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                             return (
                                 f"<div style='display: flex; flex-direction: row; align-items: stretch; height: 100%; gap: 0.4cqw;'>"
                                 f"<div style='display: flex; flex-direction: column; height: 100%; align-items: flex-end; color: {color}; font-weight: bold;'>"
-                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 3cqw; line-height: 1;'>{num}</div>"  # <--- CHỈNH CỠ CHỮ SỐ TẠI ĐÂY
-                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 3cqw; line-height: 1; white-space: nowrap;'>{name}</div>"  # <--- CHỈNH CỠ CHỮ TÊN QUẺ TẠI ĐÂY
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2.4cqw; line-height: 1;'>{num}</div>"  # <--- CHỈNH CỠ CHỮ SỐ TẠI ĐÂY
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2.4cqw; line-height: 1; white-space: nowrap;'>{name}</div>"  # <--- CHỈNH CỠ CHỮ TÊN QUẺ TẠI ĐÂY
                                 f"</div>"
                                 f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 4.2cqw;'>{lines_html}</div>"
                                 f"</div>"
