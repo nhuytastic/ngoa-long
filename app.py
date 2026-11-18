@@ -901,18 +901,10 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 if loai_ban == "时家":
                     day_wl_ju = day_star_s
                     day_scan_data, _, _, day_p_land = lap_que_wolong(can_ngay_scan, chi_ngay_scan, wl_dun_s, day_wl_ju, day_star_s)
-                    day_cung_st = analyze_formations(day_scan_data, day_can_tuan, day_p_land)
-                    day_cc_html = ""
-                    if day_cung_st.get(target_palace):
-                        day_cc_items = []
-                        for f_name, f_color in day_cung_st[target_palace]:
-                            clean_name = re.sub(r"<[^>]+>", "", f_name)
-                            day_cc_items.append(f"<span style='color:{f_color}; font-weight:bold;'>{clean_name}</span>")
-                        day_cc_html = " | " + ", ".join(day_cc_items)
-
                     day_can_tuan = get_xun_leader(can_ngay_scan, chi_ngay_scan)
                     
                     day_stem_colors, day_mon_colors = analyze_wolong_board(day_scan_data, day_can_tuan)
+                    day_cung_st = analyze_formations(day_scan_data, day_can_tuan, day_p_land)
                     
                     day_cung_day_stars = {p: day_scan_data[p]['day_star'] for p in range(1, 10)}
                     day_kigaku = evaluate_kigaku_formations(b_day_star, day_cung_day_stars, chi_ngay_scan, "日家")
@@ -930,6 +922,14 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     d_style2 = f"color:{d_star_col2}; font-weight:bold; font-size:16px; text-decoration:{d_decor2}; text-decoration-color:#000000; text-underline-offset:2px; text-decoration-thickness:2px;"
                     kigaku_day_html = f" | Cửu Tinh: <span style='{d_style2}'>{d_star_val2}</span>"
                     
+                    day_cc_html = ""
+                    if day_cung_st.get(target_palace):
+                        day_cc_items = []
+                        for f_name, f_color in day_cung_st[target_palace]:
+                            clean_name = re.sub(r"<[^>]+>", "", f_name)
+                            day_cc_items.append(f"<span style='color:{f_color}; font-weight:bold;'>{clean_name}</span>")
+                        day_cc_html = " | " + ", ".join(day_cc_items)
+
                     day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
                     day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span> | <span style='color:#666666; font-weight:bold;'>{d_than}</span>{day_cc_html}{kigaku_day_html}"
                 res_hex_html = ""
