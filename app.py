@@ -489,7 +489,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                         init_block = build_hex_block(center_hex['init_bits'], center_hex['init_num'], center_hex['init_name'], center_hex['init_color'])
 
                         center_hex_html = (
-                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch;'>"
+                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.7cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch;'>"
                             f"{init_block}"
                             f"</div>"
                         )
@@ -614,7 +614,7 @@ cung_day_stars = {p: data[p]['day_star'] for p in range(1, 10)}
 breaker_chi = wl_chi 
 kigaku_data = evaluate_kigaku_formations(user_birth_star, cung_day_stars, breaker_chi, loai_ban)
 
-# 7. NGŨ ĐỘN, LỤC DIỆU
+# 7. NGŨ ĐỘN
 tdn_data = None
 if loai_ban == "时家":
     tdn_data = get_tdn_data(l_month, l_day, chi_gio_idx, is_leap)
@@ -651,7 +651,7 @@ with st.container():
     loc_dia_can = c3.selectbox("地盤 (Địa Bàn)", options=can_list)
     loc_mon = c4.selectbox("八门 (Bát Môn)", options=mon_list)
     
-    # HÀNG 2: Thiên Thời -> Nhân Hòa -> Địa Lợi -> Cát Nhật -> Ngũ Độn
+    # HÀNG 2: Thiên Thời -> Nhân Hòa -> Địa Lợi -> Nhật Bàn -> Cát Thời
     _, c11, c12, c_dialoi, c13, c15, _ = st.columns([0.1, 1, 1, 1, 1, 1, 0.1])
     loc_thien_thoi = c11.selectbox("天时 (Thiên Thời)", options=["", "吉"])
     loc_nhan_hoa = c12.selectbox("人和 (Nhân Hòa)", options=["", "吉"])
@@ -660,7 +660,7 @@ with st.container():
     options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
     options_cat_thoi = ["", "五遁", "易經"] if loai_ban == "时家" else [""] 
     
-    loc_cat_nhat = c13.selectbox("吉日 (Cát Nhật)", options=options_thoi, disabled=(loai_ban=="日家"))
+    loc_cat_nhat = c13.selectbox("天-人-地 (Nhật Bàn)", options=options_thoi, disabled=(loai_ban=="日家"))
     loc_cat_thoi = c15.selectbox("吉时 (Cát Thời)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
 
 if st.button("TÌM KIẾM", use_container_width=True):
