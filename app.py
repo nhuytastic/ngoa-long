@@ -335,13 +335,12 @@ def analyze_wolong_board(cung_data, can_tuan):
 
     return stem_colors, mon_colors
 
-def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour, sel_minute):
+def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour=None, sel_minute=None):
     """
-    Tính Quẻ Đầu -> Quẻ Cuối ở Trung Cung cho Thời Bàn:
+    Tính Quẻ Dịch Đầu ở Trung Cung cho Thời Bàn:
     - Thượng Quái: Bát Môn tại Mệnh Cung
     - Hạ Quái: Bát Môn tại vị trí Tuần Thủ Giáp trên Địa Bàn (p_circle)
-    - Biến Hào: Chia 120 phút của canh giờ thành 6 khoảng 20 phút (Hào 1 -> Hào 6)
-    - Nếu menh_cung == 5 hoặc p_circle == 5: trả về None (không hiển thị quẻ)
+    - Nếu menh_cung == 5 hoặc p_circle == 5: trả về None
     """
     if menh_cung == 5 or p_circle == 5:
         return None
@@ -356,34 +355,18 @@ def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour, sel_minu
     if not upper_tri or not lower_tri:
         return None
 
-    minutes_in_branch = sel_minute if sel_hour % 2 == 1 else (60 + sel_minute)
-    hao_idx = minutes_in_branch // 20  # 0..5 (Hào 1 -> Hào 6)
-
     init_bits = list(TRIGRAM_TO_BITS[lower_tri] + TRIGRAM_TO_BITS[upper_tri])
-    final_bits = list(init_bits)
-    final_bits[hao_idx] = 1 - final_bits[hao_idx]
-
-    final_lower_tri = BITS_TO_TRIGRAM[tuple(final_bits[:3])]
-    final_upper_tri = BITS_TO_TRIGRAM[tuple(final_bits[3:])]
-
     eval_color_map = {"〇": "#CC0000", "△": "#D4AF37", "✕": "#000000"}
 
     init_num, init_name = HEX_CHINESE_DICT[(upper_tri, lower_tri)]
     init_eval = EVAL_DICT[upper_tri][lower_tri]
 
-    final_num, final_name = HEX_CHINESE_DICT[(final_upper_tri, final_lower_tri)]
-    final_eval = EVAL_DICT[final_upper_tri][final_lower_tri]
-
     return {
         'init_bits': init_bits,
         'init_num': init_num,
         'init_name': init_name,
-        'init_color': eval_color_map[init_eval],
-        'final_bits': final_bits,
-        'final_num': final_num,
-        'final_name': final_name,
-        'final_color': eval_color_map[final_eval],
-        'hao_idx': hao_idx
+        'init_eval': init_eval,
+        'init_color': eval_color_map[init_eval]
     }
 
 def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="日家"):
@@ -496,27 +479,18 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                             return (
                                 f"<div style='display: flex; flex-direction: row; align-items: stretch; height: 100%; gap: 0.4cqw;'>"
                                 f"<div style='display: flex; flex-direction: column; height: 100%; align-items: flex-end; color: {color}; font-weight: bold;'>"
-                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2cqw; line-height: 1;'>{num}</div>"
-                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2cqw; line-height: 1; white-space: nowrap;'>{name}</div>"
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 3cqw; line-height: 1;'>{num}</div>"  # <--- CHỈNH CỠ CHỮ SỐ TẠI ĐÂY
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 3cqw; line-height: 1; white-space: nowrap;'>{name}</div>"  # <--- CHỈNH CỠ CHỮ TÊN QUẺ TẠI ĐÂY
                                 f"</div>"
-                                f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 5.0cqw;'>{lines_html}</div>"
+                                f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 4.2cqw;'>{lines_html}</div>"
                                 f"</div>"
                             )
 
-                        arrow_rows = ""
-                        for i in range(6):
-                            if i == center_hex['hao_idx']:
-                                arrow_rows += "<div style='flex: 1; display: flex; align-items: center; justify-content: center; color: #666666; font-size: 2cqw; font-weight: bold; line-height: 1;'>→</div>"
-                            else:
-                                arrow_rows += "<div style='flex: 1;'></div>"
-                        arrow_html = f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 2cqw;'>{arrow_rows}</div>"
-
                         init_block = build_hex_block(center_hex['init_bits'], center_hex['init_num'], center_hex['init_name'], center_hex['init_color'])
-                        final_block = build_hex_block(center_hex['final_bits'], center_hex['final_num'], center_hex['final_name'], center_hex['final_color'])
 
                         center_hex_html = (
-                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch; gap: 0.99cqw;'>"
-                            f"{init_block}{arrow_html}{final_block}"
+                            f"<div style='position: absolute; bottom: 1.5cqw; right: 1.5cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch;'>"
+                            f"{init_block}"
                             f"</div>"
                         )
 
@@ -684,10 +658,10 @@ with st.container():
     loc_dia_loi = c_dialoi.selectbox("地利 (Địa Lợi)", options=["", "吉"])
     
     options_thoi = ["", "吉"] if loai_ban == "时家" else [""]
-    options_ngu_don = ["", "吉", "平"] if loai_ban == "时家" else [""] 
+    options_cat_thoi = ["", "五遁", "易經"] if loai_ban == "时家" else [""] 
     
     loc_cat_nhat = c13.selectbox("吉日 (Cát Nhật)", options=options_thoi, disabled=(loai_ban=="日家"))
-    loc_ngu_don = c15.selectbox("五遁 (Ngũ Độn)", options=options_ngu_don, disabled=(loai_ban=="日家"))
+    loc_cat_thoi = c15.selectbox("吉时 (Cát Thời)", options=options_cat_thoi, disabled=(loai_ban=="日家"))
 
 if st.button("TÌM KIẾM", use_container_width=True):
     with st.spinner('Đang quét dữ liệu tương lai...'):
@@ -708,6 +682,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
             loops += 1
             wd_status = ""
             wd_text_in_ra = ""
+            center_hex_scan = None
             
             if loai_ban == "日家":
                 current_scan_dt += timedelta(days=1)
@@ -733,8 +708,7 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 wd_text_in_ra = " ".join(final_ss_scan)
                 
                 if loc_gio and chi_gio_scan != loc_gio: continue
-                if loc_ngu_don == "吉" and wd_status != "吉": continue
-                if loc_ngu_don == "平" and wd_status not in ("吉", "平"): continue
+                if loc_cat_thoi == "五遁" and wd_status not in ("吉", "平"): continue
                     
                 can_gio_scan = get_wushu_dun(can_ngay_scan, chi_gio_scan)
                 wl_ju_s = calculate_correct_ju(wl_yuan_s, can_gio_scan, chi_gio_scan, wl_jieqi_s)
@@ -742,6 +716,11 @@ if st.button("TÌM KIẾM", use_container_width=True):
                 
                 scan_data, p_circle_scan, cung_phi_tinh_scan, p_land_scan = lap_que_wolong(can_gio_scan, chi_gio_scan, wl_dun_s, wl_ju_s, daily_star_scan)
                 can_tuan_scan = get_xun_leader(can_gio_scan, chi_gio_scan)
+
+                center_hex_scan = calculate_center_hexagram(scan_data, user_menh_cung, p_circle_scan)
+                if loc_cat_thoi == "易經":
+                    if not center_hex_scan or center_hex_scan['init_eval'] not in ("〇", "△"):
+                        continue
                 
                 time_str = f"{current_scan_dt.strftime('%d/%m/%Y')} {current_scan_dt.strftime('%H:%M')}"
                 c_str = f"Ngày {can_ngay_scan}{chi_ngay_scan} {can_gio_scan}{chi_gio_scan}时 | {wl_dun_s}{wl_ju_s}局"
@@ -856,19 +835,21 @@ if st.button("TÌM KIẾM", use_container_width=True):
                     
                     day_stems_html = f"<span style='color:{d_stem_col}; font-weight:bold;'>{d_thien}</span>/<span style='color:{d_stem_col}; font-weight:bold;'>{d_dia}</span>"
                     day_board_html = f"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↳ <b>[Nhật Bàn]</b> | {day_stems_html} | <span style='color:{d_mon_col}; font-weight:bold;'>{d_mon}</span> | <span style='color:#666666; font-weight:bold;'>{d_than}</span>{kigaku_day_html}"
-
-                results.append((time_str, c_str, ten_cung, kigaku_result_html, res_mon, res_mon_col, res_than, day_board_html, res_stems_html, wd_text_in_ra))
+                res_hex_html = ""
+                if loai_ban == "时家" and center_hex_scan:
+                    res_hex_html = f" | <span style='color:{center_hex_scan['init_color']}; font-weight:bold;'>{center_hex_scan['init_num']} {center_hex_scan['init_name']}</span>"
+                results.append((time_str, c_str, ten_cung, kigaku_result_html, res_mon, res_mon_col, res_than, day_board_html, res_stems_html, res_hex_html, wd_text_in_ra))
 
         if results:
             st.success(f"**TÌM THẤY {len(results)} KẾT QUẢ:**")
-            for idx, (t_str, canchi_str, cung_str, kigaku_html, m_name, m_col, t_than, day_board_html, stems_html, wd_text_in_ra) in enumerate(results):
+            for idx, (t_str, canchi_str, cung_str, kigaku_html, m_name, m_col, t_than, day_board_html, stems_html, hex_html, wd_text_in_ra) in enumerate(results):
                 h_text = f" | Hướng: {cung_str}" if cung_str else ""
                 mon_html = f" | <span style='color:{m_col}; font-weight:bold;'>{m_name}</span>"
                 than_html = f" | <span style='color:#666666; font-weight:bold;'>{t_than}</span>" if t_than else ""
                 wd_html = f" | <span style='color:#666666; font-weight:bold;'>{wd_text_in_ra}</span>" if wd_text_in_ra else ""
                 
                 if loai_ban == "时家":
-                    st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{mon_html}{than_html}{kigaku_html}{wd_html}", unsafe_allow_html=True)
+                    st.markdown(f"{idx+1}. {t_str}{h_text} | {stems_html}{mon_html}{than_html}{kigaku_html}{hex_html}{wd_html}", unsafe_allow_html=True)
                 else:
                     st.markdown(f"{idx+1}. {t_str} | {canchi_str}{h_text} | {stems_html}{mon_html}{than_html}{kigaku_html}", unsafe_allow_html=True)
                 if day_board_html:
