@@ -410,7 +410,7 @@ def analyze_formations(cung_data, can_tuan, p_land):
             rank = FORMATION_RANKS.get(raw_name)
             if rank == 3: continue 
             vert_text = "<br>".join(list(raw_name))
-            if rank: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}<div style='font-size: 1em; font-weight: normal; color: #666; margin-top: 3px;'>({rank})</div></div>"
+            if rank: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}<div style='font-size: 0.9em; font-weight: normal; color: #666; margin-top: 3px;'>({rank})</div></div>"
             else: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}</div>"
             formatted_list.append((display_name, color))
         cung_status[p] = formatted_list
