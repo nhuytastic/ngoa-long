@@ -419,7 +419,7 @@ def analyze_formations(cung_data, can_tuan, p_land):
 
 def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour=None, sel_minute=None):
     """
-    Tính Quẻ Dịch Đầu ở Trung Cung cho Thời Bàn:
+    Tính Quẻ Dịch Đầu ở Trung Cung cho Thời Bàn, kèm vị trí hào động (20 phút) và màu Quẻ Cuối:
     - Thượng Quái: Bát Môn tại Mệnh Cung
     - Hạ Quái: Bát Môn tại vị trí Tuần Thủ Giáp trên Địa Bàn (p_circle)
     - Nếu menh_cung == 5 hoặc p_circle == 5: trả về None
@@ -443,12 +443,26 @@ def calculate_center_hexagram(cung_data, menh_cung, p_circle, sel_hour=None, sel
     init_num, init_name = HEX_CHINESE_DICT[(upper_tri, lower_tri)]
     init_eval = EVAL_DICT[upper_tri][lower_tri]
 
+    hao_idx = None
+    final_color = eval_color_map[init_eval]
+    if sel_hour is not None and sel_minute is not None:
+        minutes_in_branch = sel_minute if sel_hour % 2 == 1 else (60 + sel_minute)
+        hao_idx = minutes_in_branch // 20  # 0..5 (Hào 1 -> Hào 6)
+        final_bits = list(init_bits)
+        final_bits[hao_idx] = 1 - final_bits[hao_idx]
+        final_lower_tri = BITS_TO_TRIGRAM[tuple(final_bits[:3])]
+        final_upper_tri = BITS_TO_TRIGRAM[tuple(final_bits[3:])]
+        final_eval = EVAL_DICT[final_upper_tri][final_lower_tri]
+        final_color = eval_color_map[final_eval]
+
     return {
         'init_bits': init_bits,
         'init_num': init_num,
         'init_name': init_name,
         'init_eval': init_eval,
-        'init_color': eval_color_map[init_eval]
+        'init_color': eval_color_map[init_eval],
+        'hao_idx': hao_idx,
+        'final_color': final_color
     }
 
 def evaluate_kigaku_formations(birth_star, current_stars, breaker_branch, mode="日家"):
@@ -551,24 +565,32 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
                         wudun_html = f"<div style='position: absolute; top: 1cqw; right: 1.5cqw; color: #666666; font-size: {f_form}; text-align: right; line-height: 1.4; font-weight: bold;'>{'<br>'.join(final_ss)}</div>"
 
                     if center_hex:
-                        def build_hex_block(bits, num, name, color):
+                        def build_hex_block(bits, num, name, color, hao_idx=None, final_color=None):
                             lines_html = ""
-                            for b in bits:  # 0..5 (Hào 1 dưới cùng -> Hào 6 trên cùng)
+                            for idx, b in enumerate(bits):  # 0..5 (Hào 1 dưới cùng -> Hào 6 trên cùng)
+                                bar_color = final_color if (hao_idx is not None and idx == hao_idx and final_color) else color
                                 if b == 1:
-                                    lines_html += f"<div style='flex: 1; display: flex; align-items: center; width: 100%;'><div style='width: 100%; height: 0.9cqw; background-color: {color};'></div></div>"
+                                    lines_html += f"<div style='flex: 1; display: flex; align-items: center; width: 100%;'><div style='width: 100%; height: 0.9cqw; background-color: {bar_color};'></div></div>"
                                 else:
-                                    lines_html += f"<div style='flex: 1; display: flex; align-items: center; justify-content: space-between; width: 100%;'><div style='width: 42%; height: 0.9cqw; background-color: {color};'></div><div style='width: 42%; height: 0.9cqw; background-color: {color};'></div></div>"
+                                    lines_html += f"<div style='flex: 1; display: flex; align-items: center; justify-content: space-between; width: 100%;'><div style='width: 42%; height: 0.9cqw; background-color: {bar_color};'></div><div style='width: 42%; height: 0.9cqw; background-color: {bar_color};'></div></div>"
                             return (
                                 f"<div style='display: flex; flex-direction: row; align-items: stretch; height: 100%; gap: 0.4cqw;'>"
                                 f"<div style='display: flex; flex-direction: column; height: 100%; align-items: flex-end; color: {color}; font-weight: bold;'>"
-                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2.9cqw; line-height: 1;'>{num}</div>"  # <--- CHỈNH CỠ CHỮ SỐ TẠI ĐÂY
-                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2.9cqw; line-height: 1; white-space: nowrap;'>{name}</div>"  # <--- CHỈNH CỠ CHỮ TÊN QUẺ TẠI ĐÂY
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2.9cqw; line-height: 1;'>{num}</div>"
+                                f"<div style='height: 50%; display: flex; align-items: center; justify-content: flex-end; font-size: 2.9cqw; line-height: 1; white-space: nowrap;'>{name}</div>"
                                 f"</div>"
                                 f"<div style='display: flex; flex-direction: column-reverse; height: 100%; width: 4.2cqw;'>{lines_html}</div>"
                                 f"</div>"
                             )
 
-                        init_block = build_hex_block(center_hex['init_bits'], center_hex['init_num'], center_hex['init_name'], center_hex['init_color'])
+                        init_block = build_hex_block(
+                            center_hex['init_bits'],
+                            center_hex['init_num'],
+                            center_hex['init_name'],
+                            center_hex['init_color'],
+                            center_hex.get('hao_idx'),
+                            center_hex.get('final_color')
+                        )
 
                         center_hex_html = (
                             f"<div style='position: absolute; bottom: 1.5cqw; right: 1.8cqw; height: 11.5cqw; display: flex; flex-direction: row; align-items: stretch;'>"
