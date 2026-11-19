@@ -410,7 +410,7 @@ def analyze_formations(cung_data, can_tuan, p_land):
             rank = FORMATION_RANKS.get(raw_name)
             if rank == 3: continue 
             vert_text = "<br>".join(list(raw_name))
-            if rank: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}<div style='font-size: 0.9em; font-weight: normal; color: #666; margin-top: 3px;'>({rank})</div></div>"
+            if rank: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}<div style='font-size: 1em; font-weight: normal; color: #666; margin-top: 3px;'>({rank})</div></div>"
             else: display_name = f"<div style='text-align: center; line-height: 1.15;'>{vert_text}</div>"
             formatted_list.append((display_name, color))
         cung_status[p] = formatted_list
@@ -504,7 +504,7 @@ def render_html_table(cung_data, center_hex, stem_colors, mon_colors, can_tuan, 
         .qmdj-td {{ border: 1px solid #aaa; width: 33.33%; position: relative; vertical-align: top; padding: 1.5cqw; }}
         
         .top-right-panel {{ position: absolute; top: 1cqw; right: 1.5cqw; display: flex; flex-direction: row-reverse; gap: 1cqw; align-items: flex-start;}}
-        .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: 2.2cqw;}}
+        .formation-item {{ display: flex; flex-direction: column; align-items: center; justify-content: flex-start; font-weight: bold; color: #000; font-size: 2.4cqw;}}
         
         .bottom-left-stems {{ position: absolute; bottom: 1.5cqw; left: 1.5cqw; display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; }}
         
